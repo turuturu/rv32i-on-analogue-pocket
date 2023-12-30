@@ -32,7 +32,7 @@ namespace {
 TEST_F(TestDecoder, LUI) {
     instr = 0b0000'0000'0000'0000'0000'0000'0011'0111;
     dut->exec(instr);
-    ASSERT_EQ(dut->alu_op, Valu___024unit::alu_op_e::RV_ALU_LUI);
+    ASSERT_EQ(dut->rv_op, Valu___024unit::rv_op_e::RV_LUI);
 } 
 
 }  // namespace
