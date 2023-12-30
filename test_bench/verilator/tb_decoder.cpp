@@ -15,7 +15,7 @@ int main(int argc, char** argv) {
   // LUI
   dut->instr = 0b0000'0000'0000'0000'0000'0000'0011'0111;
   dut->eval();
-  assert(dut->alu_op == Vdecoder___024unit::alu_op_e::ALU_LUI);
+  assert(dut->alu_op == Vdecoder___024unit::alu_op_e::RV_ALU_LUI);
   // error test
   assert(dut->alu_op == 99);
 
