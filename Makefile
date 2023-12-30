@@ -2,13 +2,9 @@
 
 SRCDIR = ./src/rtl
 OBJDIR = ./obj_dir
-OBJS = 
 TBDIR = ./test_bench
 VERILATOR_TBDIR = $(TBDIR)/verilator
-TBBENCHES = $(subst ) 
 SRCS = decoder
-SV_SRCS = $(patsubst %,$(SRCDIR)/%, $(patsubst %,%.sv,$(SRCS)))
-TBS = $(patsubst %, tb_%, $(patsubst %.sv,%.cpp,$(SRCS)))
 INC = -I$(SRCDIR)
 
 build:
