@@ -1,23 +1,39 @@
-#include <cassert>
-#include <iostream>
+#include "tb_decoder.hpp"
+
+#include <gtest/gtest.h>
 #include <verilated.h>
-#include "Vdecoder.h"
-#include "Vdecoder___024unit.h"
+#include "Valu___024unit.h"
 
-int time_counter = 0;
+#include <climits>
+#include <random>
 
-int main(int argc, char** argv) {
-
-  Verilated::commandArgs(argc, argv);
-
-  // Instantiate DUT
-  Vdecoder *dut = new Vdecoder();
-  // LUI
-  dut->instr = 0b0000'0000'0000'0000'0000'0000'0011'0111;
-  dut->eval();
-  assert(dut->alu_op == Vdecoder___024unit::alu_op_e::RV_ALU_LUI);
-  // error test
-  assert(dut->alu_op == 99);
-
-  dut->final();
+void ValuDecoder::exec(const int &_instr) {
+    instr = _instr;
+    eval();
 }
+
+class TestDecoder : public ::testing::Test {
+   protected:
+    TestDecoder() : instr(0) {};
+    ValuDecoder *dut;
+
+    int instr;
+
+    void SetUp() override { dut = new ValuDecoder(); }
+
+    void TearDown() override {
+        dut->final();
+        delete dut;
+    }
+};
+
+namespace {
+
+TEST_F(TestDecoder, LUI) {
+    instr = 0b0000'0000'0000'0000'0000'0000'0011'0111;
+    dut->exec(instr);
+    ASSERT_EQ(dut->alu_op, Valu___024unit::alu_op_e::RV_ALU_LUI);
+} 
+
+}  // namespace
+
