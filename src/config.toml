@@ -1,0 +1,24 @@
+[Platform]
+name = "rv32i" 
+image = "./assets/RISC-V-logo-square.png"
+short_name = "rv32i"
+category = "rv32"
+description = "rv32iOnAnaloguePocket"
+info = "assets/info.txt"
+
+[Build]
+version = "0.0.2"
+
+[Author]
+name = "turuturu"
+icon = "./assets/turuturu.png"
+url = "https://github.com/turuturu/rv32i-on-analogue-pocket"
+
+[Hardware]
+video_width = 400
+video_height = 360
+#[Cores]
+  #[Cores.0]
+  #name = "default"
+  #source_file = "ap_core.qpf"
+  #filename = "bitstream.qpf_r"
