@@ -1,6 +1,7 @@
 `ifndef __DEFINE_SV
 `define __DEFINE_SV
 
+
 typedef enum logic [5:0] {
   RV_LUI,
   RV_AUIPC,
@@ -73,5 +74,60 @@ typedef enum logic [2:0] {
   JTYPE
 } optype_e /*verilator public*/;
 
+typedef struct packed {
+  logic [6:0] funct7;
+  logic [4:0] rs2;
+  logic [4:0] rs1;
+  logic [2:0] funct3;
+  logic [4:0] rd;
+  opcode_e opcode;
+} rv32i_r_type_s;
+
+typedef struct packed {
+  logic [11:0] imm;
+  logic [4:0] rs1;
+  logic [2:0] funct3;
+  logic [4:0] rd;
+  opcode_e opcode;
+} rv32i_i_type_s;
+
+typedef struct packed {
+  logic [6:0] imm1;
+  logic [4:0] rs2;
+  logic [4:0] rs1;
+  logic [2:0] funct3;
+  logic [4:0] imm2;
+  opcode_e opcode;
+} rv32i_s_type_s;
+
+typedef struct packed {
+  logic [6:0] imm1;
+  logic [4:0] rs2;
+  logic [4:0] rs1;
+  logic [2:0] funct3;
+  logic [4:0] imm2;
+  opcode_e opcode;
+} rv32i_b_type_s;
+
+typedef struct packed {
+  logic [19:0] imm;
+  logic [4:0] rd;
+  opcode_e opcode;
+} rv32i_u_type_s;
+
+typedef struct packed {
+  logic [19:0] imm;
+  logic [4:0] rd;
+  opcode_e opcode;
+} rv32i_j_type_s;
+
+typedef union packed {
+  rv32i_r_type_s type_r;
+  rv32i_i_type_s type_i;
+  rv32i_s_type_s type_s;
+  rv32i_b_type_s type_b;
+  rv32i_u_type_s type_u;
+  rv32i_j_type_s type_j;
+} rv32i_inst_u;
 
 `endif
