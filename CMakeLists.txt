@@ -59,7 +59,7 @@ gtest_discover_tests(test_all)
 verilate(test_all
   INCLUDE_DIRS "src/rtl"
   SOURCES
-  src/rtl/decoder.sv
+  src/rtl/rv32i/decoder.sv
   PREFIX Valu
 )
 

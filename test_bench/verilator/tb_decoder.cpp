@@ -2,7 +2,7 @@
 
 #include <gtest/gtest.h>
 #include <verilated.h>
-#include "Valu___024unit.h"
+#include "Valu_rv32i.h"
 
 #include <climits>
 #include <random>
@@ -32,7 +32,7 @@ namespace {
 TEST_F(TestDecoder, LUI) {
     instr = 0b0000'0000'0000'0000'0000'0000'0011'0111;
     dut->exec(instr);
-    ASSERT_EQ(dut->rv_op, Valu___024unit::rv_op_e::RV_LUI);
+    ASSERT_EQ(dut->rv_op, Valu_rv32i::rv_op_e::LUI);
 } 
 
 }  // namespace

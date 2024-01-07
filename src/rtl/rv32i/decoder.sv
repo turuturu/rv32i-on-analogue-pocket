@@ -1,4 +1,5 @@
-`include "define.sv" 
+`include "rv32i/rv32i.sv" 
+import rv32i::*;
 
 module decoder 
 (
@@ -21,17 +22,17 @@ module decoder
 
   always_comb begin
     unique case (opcode)
-      LUI: begin
+      OP_LUI: begin
         optype = UTYPE;
-        rv_op = RV_LUI;
+        rv_op = LUI;
       end
-      AUIPC: begin
+      OP_AUIPC: begin
         optype = UTYPE;
-        rv_op = RV_LUI;
+        rv_op = LUI;
       end
       default: begin
         optype = UTYPE;
-        rv_op = RV_BGEU;
+        rv_op = BGEU;
       end
     endcase
   end
@@ -61,7 +62,7 @@ module decoder
         rs1 = instr.type_s.rs1;
         rs2 = instr.type_s.rs2;
         rd = 5'b0;
-        imm = {{20{instr.type_s.imm1[6]}}, instr.type_s.imm1[6:0], instr.type_s.imm2[0:4]};
+        imm = {{20{instr.type_s.imm1[6]}}, instr.type_s.imm1[6:0], instr.type_s.imm2[4:0]};
         opcode = instr.type_s.opcode;
       end
       BTYPE: begin
@@ -83,6 +84,8 @@ module decoder
         opcode = instr.type_u.opcode;
       end
       JTYPE: begin
+        funct3 = 3'b0;
+        funct7 = 7'b0;
         rs1 = 5'b0;
         rs2 = 5'b0;
         rd = instr.type_u.rd;
@@ -96,7 +99,7 @@ module decoder
         rs2 = 5'b0;
         rd = 5'b0;
         imm = 32'b0;
-        opcode = 7'b0;
+        opcode = opcode_e'(7'b0);
       end
     endcase
   end
