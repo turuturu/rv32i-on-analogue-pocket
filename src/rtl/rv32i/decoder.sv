@@ -1,7 +1,6 @@
 `include "rv32i/rv32i.sv" 
-import rv32i::*;
 
-module decoder 
+module decoder import rv32i::*;
 (
 //  input  logic [31:0] instr, // instruction
   input  rv32i_inst_u instr, // instruction
