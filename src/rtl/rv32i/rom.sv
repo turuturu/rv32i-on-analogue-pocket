@@ -1,3 +1,6 @@
+`ifndef __RV32I_ROM_SV
+`define __RV32I_ROM_SV
+
 `include "rv32i/rv32i.sv" 
 
 module rom import rv32i::*;
@@ -10,13 +13,15 @@ module rom import rv32i::*;
   logic [31:0] rom [0:1023]; // 4KB
   logic [9:0] inner_addr;
 
-  // for test
-  initial begin
-    $readmemh ("rom.txt", rom);
-  end
+  // // for test
+  // initial begin
+  //   $readmemh ("rom.txt", rom);
+  // end
 
   always_ff @(posedge clk) begin
     inner_addr <= addr[11:2];
   end
   assign data = rom[inner_addr];
 endmodule
+
+`endif

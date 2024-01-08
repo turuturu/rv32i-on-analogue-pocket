@@ -1,3 +1,6 @@
+`ifndef __RV32I_REGISTERS_SV
+`define __RV32I_REGISTERS_SV
+
 `include "rv32i/rv32i.sv" 
 
 module registers import rv32i::*;
@@ -23,3 +26,5 @@ module registers import rv32i::*;
   assign rs2_data = rs2_addr == 5'b0 ? 32'b0 : regs[rs2_addr];
 
 endmodule
+
+`endif

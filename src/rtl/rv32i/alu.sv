@@ -1,3 +1,6 @@
+`ifndef __RV32I_ALU_SV
+`define __RV32I_ALU_SV
+
 `include "rv32i/rv32i.sv" 
 
 module alu import rv32i::*;
@@ -100,3 +103,4 @@ module alu import rv32i::*;
   end
 
 endmodule
+`endif

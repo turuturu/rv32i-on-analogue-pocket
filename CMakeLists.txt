@@ -40,36 +40,131 @@ FetchContent_MakeAvailable(googletest)
 ####################
 
 enable_testing()
-add_executable(test_all
-  test_bench/verilator/tb_decoder.cpp
+
+# set_target_properties(test_all PROPERTIES
+#   CXX_STANDARD 17
+#   CXX_STANDARD_REQUIRED ON
+#   COMPILE_FLAGS "-Wall -g -fsanitize=address"
+#   LINK_FLAGS "-fsanitize=address"
+#)
+# add_executable(test_all
+#   test_bench/verilator/tb_rv32i_top.cpp
+#   test_bench/verilator/tb_decoder.cpp
+#   test_bench/verilator/main.cpp
+# )
+# target_link_libraries(
+#   test_all
+#   PRIVATE
+#   GTest::gtest_main
+# )
+
+add_executable(test_rv32i_decoder
+  test_bench/verilator/rv32i/tb_decoder.cpp
   test_bench/verilator/main.cpp
 )
 target_link_libraries(
-  test_all
+  test_rv32i_decoder
   PRIVATE
   GTest::gtest_main
 )
 
-set_target_properties(test_all PROPERTIES
-  CXX_STANDARD 17
-  CXX_STANDARD_REQUIRED ON
-  COMPILE_FLAGS "-Wall -g -fsanitize=address"
-  LINK_FLAGS "-fsanitize=address"
+add_executable(test_rv32i_alu
+  test_bench/verilator/rv32i/tb_alu.cpp
+  test_bench/verilator/main.cpp
+)
+target_link_libraries(
+  test_rv32i_alu
+  PRIVATE
+  GTest::gtest_main
+)
+add_executable(test_rv32i_ram
+  test_bench/verilator/rv32i/tb_ram.cpp
+  test_bench/verilator/main.cpp
+)
+target_link_libraries(
+  test_rv32i_ram
+  PRIVATE
+  GTest::gtest_main
+)
+add_executable(test_rv32i_registers
+  test_bench/verilator/rv32i/tb_registers.cpp
+  test_bench/verilator/main.cpp
+)
+target_link_libraries(
+  test_rv32i_registers
+  PRIVATE
+  GTest::gtest_main
+)
+
+add_executable(test_rv32i_rom
+  test_bench/verilator/rv32i/tb_rom.cpp
+  test_bench/verilator/main.cpp
+)
+target_link_libraries(
+  test_rv32i_rom
+  PRIVATE
+  GTest::gtest_main
+)
+
+add_executable(test_rv32i_top
+  test_bench/verilator/rv32i/tb_rv32i_top.cpp
+  test_bench/verilator/main.cpp
+)
+target_link_libraries(
+  test_rv32i_top
+  PRIVATE
+  GTest::gtest_main
 )
 
 include(GoogleTest)
-gtest_discover_tests(test_all)
+gtest_discover_tests(test_rv32i_decoder)
+gtest_discover_tests(test_rv32i_alu)
+gtest_discover_tests(test_rv32i_ram)
+gtest_discover_tests(test_rv32i_registers)
+gtest_discover_tests(test_rv32i_rom)
+gtest_discover_tests(test_rv32i_top)
 
 ####################
 # Verilate
 ####################
 
-verilate(test_all
+verilate(test_rv32i_decoder
   INCLUDE_DIRS "src/rtl"
   SOURCES
-  src/rtl/rv32i/decoder.sv
+    src/rtl/rv32i/decoder.sv
   PREFIX Valu
 )
+verilate(test_rv32i_alu
+  INCLUDE_DIRS "src/rtl"
+  SOURCES
+    src/rtl/rv32i/alu.sv
+  PREFIX Valu
+)
+verilate(test_rv32i_ram
+  INCLUDE_DIRS "src/rtl"
+  SOURCES
+    src/rtl/rv32i/ram.sv
+  PREFIX Valu
+)
+verilate(test_rv32i_registers
+  INCLUDE_DIRS "src/rtl"
+  SOURCES
+    src/rtl/rv32i/registers.sv
+  PREFIX Valu
+)
+verilate(test_rv32i_rom
+  INCLUDE_DIRS "src/rtl"
+  SOURCES
+    src/rtl/rv32i/rom.sv
+  PREFIX Valu
+)
+verilate(test_rv32i_top
+  INCLUDE_DIRS "src/rtl"
+  SOURCES
+    src/rtl/rv32i/rv32i_top.sv
+  PREFIX Valu
+)
+
 
 ####################
 # pfDevTool

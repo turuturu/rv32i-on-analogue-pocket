@@ -1,3 +1,6 @@
+`ifndef __RV32I_DECODER_SV
+`define __RV32I_DECODER_SV
+
 `include "rv32i/rv32i.sv" 
 
 module decoder import rv32i::*;
@@ -300,3 +303,5 @@ module decoder import rv32i::*;
     endcase
   end
 endmodule
+
+`endif

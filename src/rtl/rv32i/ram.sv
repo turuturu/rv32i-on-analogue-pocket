@@ -1,3 +1,6 @@
+`ifndef __RV32I_RAM_SV
+`define __RV32I_RAM_SV
+
 `include "rv32i/rv32i.sv" 
 
 module ram import rv32i::*;
@@ -19,3 +22,5 @@ module ram import rv32i::*;
   end
   assign rdata = rom[inner_addr];
 endmodule
+
+`endif
