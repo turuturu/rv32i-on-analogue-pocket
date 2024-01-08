@@ -1,12 +1,14 @@
+`include "rv32i/rv32i.sv" 
 
-
-module alu (
+module alu import rv32i::*;
+(
     input logic [31:0] data1,
     input logic [31:0] data2,
     input alu_op_e alu_op,
     output logic [31:0] result,
     output branch_type_e branch_type
 );
+
   logic [31:0] signed_data1;
   logic [31:0] signed_data2;
   assign signed_data1 = signed'(data1);
@@ -15,7 +17,7 @@ module alu (
   always_comb begin
     case (alu_op)
       ALU_JAL: begin
-        result = data1 + data2;
+        result = 32'b0;
         branch_type = BRANCH_RELATIVE;
       end
       ALU_JALR: begin
@@ -23,28 +25,28 @@ module alu (
         branch_type = BRANCH_ABSOLUTE;
       end
       ALU_BEQ: begin
-        result = data1 == data2;
-        branch_type = BRANCH_RELATIVE;
+        result = 32'b0;
+        branch_type = data1 == data2 ? BRANCH_RELATIVE : BRANCH_NONE;
       end
       ALU_BNE: begin
-        result = data1 != data2;
-        branch_type = BRANCH_RELATIVE;
+        result = 32'b0;
+        branch_type = data1 != data2 ? BRANCH_RELATIVE : BRANCH_NONE;
       end
       ALU_BLT: begin
-        result = data1 < data2;
-        branch_type = BRANCH_RELATIVE;
+        result = 32'b0;
+        branch_type = data1 < data2 ? BRANCH_RELATIVE : BRANCH_NONE;
       end
       ALU_BGE: begin
-        result = data1 >= data2;
-        branch_type = BRANCH_RELATIVE;
+        result = 32'b0;
+        branch_type = data1 >= data2 ? BRANCH_RELATIVE : BRANCH_NONE;
       end
       ALU_BLTU: begin
-        result = data1 < data2;
-        branch_type = BRANCH_RELATIVE;
+        result = 32'b0;
+        branch_type = data1 < data2 ? BRANCH_RELATIVE : BRANCH_NONE;
       end
       ALU_BGEU: begin
-        result = data1 >= data2;
-        branch_type = BRANCH_RELATIVE;
+        result = 32'b0;
+        branch_type = data1 >= data2 ? BRANCH_RELATIVE : BRANCH_NONE;
       end
       ALU_ADD: begin
         result = data1 + data2;
@@ -59,11 +61,11 @@ module alu (
         branch_type = BRANCH_NONE;
       end
       ALU_SLT: begin
-        result = signed_data1 < signed_data2;
+        result = signed_data1 < signed_data2 ? 32'b1 : 32'b0;
         branch_type = BRANCH_NONE;
       end
       ALU_SLTU: begin
-        result = data1 < data2;
+        result = data1 < data2 ? 32'b1 : 32'b0;
         branch_type = BRANCH_NONE;
       end
       ALU_XOR: begin
