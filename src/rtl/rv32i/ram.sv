@@ -11,13 +11,11 @@ module ram import rv32i::*;
 
   logic [31:0] rom [0:1023]; // 4KB
   logic [9:0] inner_addr;
-  assign inner_addr = addr[11:2];
   always_ff @(posedge clk) begin
     if (mem_op == MEM_STORE) begin
       rom[inner_addr] <= wdata;
-      rdata <= wdata;
-    end else begin
-      rdata <= rom[inner_addr];
     end
+    inner_addr <= addr[11:2];
   end
+  assign rdata = rom[inner_addr];
 endmodule
