@@ -12,8 +12,8 @@ module alu import rv32i::*;
     output branch_type_e branch_type
 );
 
-  logic [31:0] signed_data1;
-  logic [31:0] signed_data2;
+  logic signed [31:0] signed_data1;
+  logic signed [31:0] signed_data2;
   assign signed_data1 = signed'(data1);
   assign signed_data2 = signed'(data2);
 
@@ -37,11 +37,11 @@ module alu import rv32i::*;
       end
       ALU_BLT: begin
         result = 32'b0;
-        branch_type = data1 < data2 ? BRANCH_RELATIVE : BRANCH_NONE;
+        branch_type = signed_data1 < signed_data2 ? BRANCH_RELATIVE : BRANCH_NONE;
       end
       ALU_BGE: begin
         result = 32'b0;
-        branch_type = data1 >= data2 ? BRANCH_RELATIVE : BRANCH_NONE;
+        branch_type = signed_data1 >= signed_data2 ? BRANCH_RELATIVE : BRANCH_NONE;
       end
       ALU_BLTU: begin
         result = 32'b0;
