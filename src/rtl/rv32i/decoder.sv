@@ -122,19 +122,19 @@ module decoder import rv32i::*;
         imm = {{20{instr.type_i.imm[11]}}, instr.type_i.imm};
         case (instr.type_i.funct3)
           3'b000: begin // LB
-            alu_op = ALU_LB;
+            alu_op = ALU_ADD;
           end
           3'b001: begin // LH
-            alu_op = ALU_LH;
+            alu_op = ALU_ADD;
           end
           3'b010: begin // LW
-            alu_op = ALU_LW;
+            alu_op = ALU_ADD;
           end
           3'b100: begin // LBU
-            alu_op = ALU_LBU;
+            alu_op = ALU_ADD;
           end
           3'b101: begin // LHU
-            alu_op = ALU_LHU;
+            alu_op = ALU_ADD;
           end
           default: begin
             // never happens
@@ -155,13 +155,13 @@ module decoder import rv32i::*;
         imm = {{20{instr.type_s.imm1[6]}}, instr.type_s.imm1[6:0], instr.type_s.imm2[4:0]};
         case (instr.type_s.funct3)
           3'b000: begin // SB
-            alu_op = ALU_SB;
+            alu_op = ALU_ADD;
           end
           3'b001: begin // SH
-            alu_op = ALU_SH;
+            alu_op = ALU_ADD;
           end
           3'b010: begin // SW
-            alu_op = ALU_SW;
+            alu_op = ALU_ADD;
           end
           default: begin
             // never happens
@@ -204,7 +204,6 @@ module decoder import rv32i::*;
             alu_op = ALU_SLL;
           end
           3'b101: begin // SRLI, SRAI
-            imm = {27'b0, instr.type_i.imm[4:0]};
             if (instr.type_i.imm[11:5] == 7'b0000000) begin
               alu_op = ALU_SRL;
             end else begin

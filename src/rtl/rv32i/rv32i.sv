@@ -11,14 +11,6 @@ typedef enum logic [4:0] {
   ALU_BGE,
   ALU_BLTU,
   ALU_BGEU,
-  ALU_LB,
-  ALU_LH,
-  ALU_LW,
-  ALU_LBU,
-  ALU_LHU,
-  ALU_SB,
-  ALU_SH,
-  ALU_SW,
   ALU_ADD,
   ALU_SUB,
   ALU_SLL,
@@ -44,6 +36,11 @@ typedef enum logic {
   MEM_STORE
 } mem_op_e /*verilator public*/;
 
+typedef enum logic [1:0] {
+  BRANCH_ABSOLUTE,
+  BRANCH_RELATIVE,
+  BRANCH_NONE
+} branch_type_e /*verilator public*/;
 
 typedef enum logic {
   REG_WE,
