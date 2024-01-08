@@ -9,7 +9,8 @@ module decoder import rv32i::*;
   output logic [4:0] rd,    // destination register
   output logic [31:0] imm,  // immediate
   output logic r_we,        // register write enable
-  output rv_op_e rv_op    // ALU operation
+  output logic m_we,        // register write enable
+  output alu_op_e alu_op    // ALU operation
 );
   opcode_e opcode;
   optype_e optype;
@@ -23,15 +24,15 @@ module decoder import rv32i::*;
     unique case (opcode)
       OP_LUI: begin
         optype = UTYPE;
-        rv_op = LUI;
+        alu_op = ALU_ADD;
       end
       OP_AUIPC: begin
         optype = UTYPE;
-        rv_op = LUI;
+        alu_op = ALU_ADD;
       end
       default: begin
         optype = UTYPE;
-        rv_op = BGEU;
+        alu_op = ALU_BGEU;
       end
     endcase
   end
