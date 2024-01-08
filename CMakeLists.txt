@@ -1,6 +1,14 @@
 cmake_minimum_required(VERSION 3.14)
 project(verilog_unittest_sample)
 
+# https://cmake.org/cmake/help/latest/policy/CMP0135.html
+cmake_policy(SET CMP0135 NEW)
+
+# find_package() uses upper-case <PACKAGENAME>_ROOT variables in conjunction with CMP0074.
+# https://cmake.org/cmake/help/latest/policy/CMP0144.html
+if(POLICY CMP0144)
+    cmake_policy(SET CMP0144 NEW)
+endif()
 ####################
 # Verilator
 ####################
