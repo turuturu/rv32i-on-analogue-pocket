@@ -9,7 +9,7 @@ module registers import rv32i::*;
     input logic [4:0] rd_addr,
     input logic [31:0] rd_data,
     output logic [31:0] rs1_data,
-    output logic [31:0] rs2_data,
+    output logic [31:0] rs2_data
 );
   logic [31:0] regs [0:31];
 
