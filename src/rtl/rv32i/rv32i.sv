@@ -11,6 +11,14 @@ typedef enum logic [4:0] {
   ALU_BGE,
   ALU_BLTU,
   ALU_BGEU,
+  ALU_LB,
+  ALU_LH,
+  ALU_LW,
+  ALU_LBU,
+  ALU_LHU,
+  ALU_SB,
+  ALU_SH,
+  ALU_SW,
   ALU_ADD,
   ALU_SUB,
   ALU_SLL,
@@ -23,6 +31,31 @@ typedef enum logic [4:0] {
   ALU_AND,
   ALU_NOP
 } alu_op_e /*verilator public*/;
+
+typedef enum logic [1:0] {
+  ALU_INPUT_IMM,
+  ALU_INPUT_REG,
+  ALU_INPUT_PC,
+  ALU_INPUT_NONE
+} alu_input_type_e /*verilator public*/;
+
+typedef enum logic {
+  MEM_LOAD,
+  MEM_STORE
+} mem_op_e /*verilator public*/;
+
+
+typedef enum logic {
+  REG_WE,
+  REG_WD
+} reg_we_e /*verilator public*/;
+
+typedef enum logic [1:0] {
+  WB_MEM,
+  WB_ALU,
+  WB_PC,
+  WB_NONE
+} wb_from_e /*verilator public*/;
 
 typedef enum logic [6:0] {
   OP_LUI    = 7'b0110111,
