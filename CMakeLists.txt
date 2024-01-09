@@ -25,6 +25,9 @@ endif()
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_COLOR_DIAGNOSTICS ON)
+set(CMAKE_COMPILE_FLAGS "-Wall -g -fsanitize=address")
+set(CMAKE_LINK_FLAGS "-fsanitize=address")
+
 include(FetchContent)
 FetchContent_Declare(
   googletest
@@ -35,136 +38,54 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
+set(targets decoder; alu; ram; registers; rom; rv32i_top)
+
 ####################
 # Test
 ####################
-
 enable_testing()
 
-# set_target_properties(test_all PROPERTIES
-#   CXX_STANDARD 17
-#   CXX_STANDARD_REQUIRED ON
-#   COMPILE_FLAGS "-Wall -g -fsanitize=address"
-#   LINK_FLAGS "-fsanitize=address"
-#)
-# add_executable(test_all
-#   test_bench/verilator/tb_rv32i_top.cpp
-#   test_bench/verilator/tb_decoder.cpp
-#   test_bench/verilator/main.cpp
-# )
-# target_link_libraries(
-#   test_all
-#   PRIVATE
-#   GTest::gtest_main
-# )
-
-add_executable(test_rv32i_decoder
-  test_bench/verilator/rv32i/tb_decoder.cpp
+# common settings
+add_library(gtest_shared
   test_bench/verilator/main.cpp
 )
 target_link_libraries(
-  test_rv32i_decoder
-  PRIVATE
+  gtest_shared
+  PUBLIC
   GTest::gtest_main
+)
+target_link_libraries(test_all
+  PRIVATE GTest::gtest_main
 )
 
-add_executable(test_rv32i_alu
-  test_bench/verilator/rv32i/tb_alu.cpp
-  test_bench/verilator/main.cpp
-)
-target_link_libraries(
-  test_rv32i_alu
-  PRIVATE
-  GTest::gtest_main
-)
-add_executable(test_rv32i_ram
-  test_bench/verilator/rv32i/tb_ram.cpp
-  test_bench/verilator/main.cpp
-)
-target_link_libraries(
-  test_rv32i_ram
-  PRIVATE
-  GTest::gtest_main
-)
-add_executable(test_rv32i_registers
-  test_bench/verilator/rv32i/tb_registers.cpp
-  test_bench/verilator/main.cpp
-)
-target_link_libraries(
-  test_rv32i_registers
-  PRIVATE
-  GTest::gtest_main
-)
+# test bench
+set(targets decoder; alu; ram; registers; rom; rv32i_top)
+foreach(target IN LISTS targets)
+  add_executable(test_rv32i_${target}
+    test_bench/verilator/rv32i/tb_${target}.cpp
+  )
+  target_link_libraries(test_rv32i_${target}
+    PRIVATE gtest_shared
+  )
+endforeach()
 
-add_executable(test_rv32i_rom
-  test_bench/verilator/rv32i/tb_rom.cpp
-  test_bench/verilator/main.cpp
-)
-target_link_libraries(
-  test_rv32i_rom
-  PRIVATE
-  GTest::gtest_main
-)
-
-add_executable(test_rv32i_top
-  test_bench/verilator/rv32i/tb_rv32i_top.cpp
-  test_bench/verilator/main.cpp
-)
-target_link_libraries(
-  test_rv32i_top
-  PRIVATE
-  GTest::gtest_main
-)
-
+# gtest
 include(GoogleTest)
-gtest_discover_tests(test_rv32i_decoder)
-gtest_discover_tests(test_rv32i_alu)
-gtest_discover_tests(test_rv32i_ram)
-gtest_discover_tests(test_rv32i_registers)
-gtest_discover_tests(test_rv32i_rom)
-gtest_discover_tests(test_rv32i_top)
+foreach(target IN LISTS targets)
+  gtest_discover_tests(test_rv32i_${target})
+endforeach()
 
 ####################
 # Verilate
 ####################
-
-verilate(test_rv32i_decoder
-  INCLUDE_DIRS "src/rtl"
-  SOURCES
-    src/rtl/rv32i/decoder.sv
-  PREFIX Valu
-)
-verilate(test_rv32i_alu
-  INCLUDE_DIRS "src/rtl"
-  SOURCES
-    src/rtl/rv32i/alu.sv
-  PREFIX Valu
-)
-verilate(test_rv32i_ram
-  INCLUDE_DIRS "src/rtl"
-  SOURCES
-    src/rtl/rv32i/ram.sv
-  PREFIX Valu
-)
-verilate(test_rv32i_registers
-  INCLUDE_DIRS "src/rtl"
-  SOURCES
-    src/rtl/rv32i/registers.sv
-  PREFIX Valu
-)
-verilate(test_rv32i_rom
-  INCLUDE_DIRS "src/rtl"
-  SOURCES
-    src/rtl/rv32i/rom.sv
-  PREFIX Valu
-)
-verilate(test_rv32i_top
-  INCLUDE_DIRS "src/rtl"
-  SOURCES
-    src/rtl/rv32i/rv32i_top.sv
-  PREFIX Valu
-)
-
+foreach(target IN LISTS targets)
+  verilate("test_rv32i_${target}"
+    INCLUDE_DIRS "src/rtl"
+    SOURCES
+      "src/rtl/rv32i/${target}.sv"
+    PREFIX Valu
+  )
+endforeach()
 
 ####################
 # pfDevTool
