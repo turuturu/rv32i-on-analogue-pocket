@@ -54,9 +54,6 @@ target_link_libraries(
   PUBLIC
   GTest::gtest_main
 )
-target_link_libraries(test_all
-  PRIVATE GTest::gtest_main
-)
 
 # test bench
 set(targets decoder; alu; ram; registers; rom; rv32i_top)
