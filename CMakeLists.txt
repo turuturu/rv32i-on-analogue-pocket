@@ -48,6 +48,7 @@ enable_testing()
 # common settings
 add_library(gtest_shared
   test_bench/verilator/main.cpp
+  test_bench/verilator/rv32i/rom.txt
 )
 target_link_libraries(
   gtest_shared
@@ -75,12 +76,19 @@ endforeach()
 ####################
 # Verilate
 ####################
+
+list(APPEND VERILATOR_ARGS --trace-underscore )
+
 foreach(target IN LISTS targets)
   verilate("test_rv32i_${target}"
     INCLUDE_DIRS "src/rtl"
     SOURCES
       "src/rtl/rv32i/${target}.sv"
-    PREFIX Valu
+    PREFIX Vrv32i_${target}
+    VERILATOR_TRACE ON
+    VERILATOR_TRACE_VCD ON
+    VERILATOR_TRACE_FST ON
+    VERILATE_TRACE_STRUCTS ON
   )
 endforeach()
 

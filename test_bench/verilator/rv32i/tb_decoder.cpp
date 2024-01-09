@@ -1,16 +1,16 @@
 #include <gtest/gtest.h>
 #include <verilated.h>
-#include "test_rv32i_decoder.dir/Valu.dir/Valu.h"
-#include "test_rv32i_decoder.dir/Valu.dir/Valu_rv32i.h"
+#include "Vrv32i_decoder.h"
+#include "Vrv32i_decoder_rv32i.h"
 
 #include <climits>
 #include <random>
 
 class DecoderTest : public ::testing::Test {
    protected:
-    Valu *dut;
+    Vrv32i_decoder *dut;
 
-    void SetUp() override { dut = new Valu(); }
+    void SetUp() override { dut = new Vrv32i_decoder(); }
 
     void TearDown() override {
         dut->final();

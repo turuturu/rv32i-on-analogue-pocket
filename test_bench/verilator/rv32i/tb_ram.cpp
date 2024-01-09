@@ -1,16 +1,16 @@
 #include <gtest/gtest.h>
 #include <verilated.h>
-#include "test_rv32i_ram.dir/Valu.dir/Valu.h"
-#include "test_rv32i_ram.dir/Valu.dir/Valu_rv32i.h"
+#include "Vrv32i_ram.h"
+#include "Vrv32i_ram_rv32i.h"
 
 #include <climits>
 #include <random>
 
 class RamTest : public ::testing::Test {
    protected:
-    Valu *dut;
+    Vrv32i_ram *dut;
 
-    void SetUp() override { dut = new Valu(); }
+    void SetUp() override { dut = new Vrv32i_ram(); }
 
     void TearDown() override {
         dut->final();

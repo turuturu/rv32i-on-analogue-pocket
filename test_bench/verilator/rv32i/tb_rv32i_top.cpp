@@ -1,16 +1,16 @@
 #include <gtest/gtest.h>
 #include <verilated.h>
-#include "test_rv32i_rv32i_top.dir/Valu.dir/Valu.h"
-#include "test_rv32i_rv32i_top.dir/Valu.dir/Valu_rv32i.h"
+#include "Vrv32i_rv32i_top.h"
+#include "Vrv32i_rv32i_top_rv32i.h"
 
 #include <climits>
 #include <random>
 
 class Rv32iTopTest : public ::testing::Test {
    protected:
-    Valu *dut;
+    Vrv32i_rv32i_top *dut;
 
-    void SetUp() override { dut = new Valu(); }
+    void SetUp() override { dut = new Vrv32i_rv32i_top(); }
 
     void TearDown() override {
         dut->final();
