@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <verilated.h>
-#include "Valu.h"
-#include "Valu_rv32i.h"
+#include "test_rv32i_rv32i_top.dir/Valu.dir/Valu.h"
+#include "test_rv32i_rv32i_top.dir/Valu.dir/Valu_rv32i.h"
 
 #include <climits>
 #include <random>
