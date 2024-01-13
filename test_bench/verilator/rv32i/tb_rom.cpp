@@ -32,10 +32,10 @@ TEST_F(RomTest, READ_WRITE) {
     int i = 0;
     
     while(i < length) {
-        dut->rom->innerrom[i] = vals[i];
+        dut->rom->inner_rom[i] = vals[i];
         i++;
     }
-//   ASSERT_EQ(dut->rom[4], 0x00000001);
+
     dut->clk = 0;
     i = 0;
     while(i < length) {

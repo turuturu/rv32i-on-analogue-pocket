@@ -10,7 +10,7 @@ module rom import rv32i::*;
     output logic [31:0] data
 );
 
-  logic [31:0] innerrom [0:1023]/*verilator public*/; // 4KB
+  logic [31:0] inner_rom [0:1023]/*verilator public*/; // 4KB
   logic [9:0] inner_addr;
 
   // // for test
@@ -22,7 +22,7 @@ module rom import rv32i::*;
   always_ff @(posedge clk) begin
     inner_addr <= addr[11:2];
   end
-  assign data = innerrom[inner_addr];
+  assign data = inner_rom[inner_addr];
 endmodule
 
 `endif

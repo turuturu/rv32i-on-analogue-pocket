@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <verilated.h>
 #include "Vrv32i_ram.h"
+#include "Vrv32i_ram_ram.h"
 #include "Vrv32i_ram_rv32i.h"
 
 #include <climits>
@@ -20,12 +21,19 @@ class RamTest : public ::testing::Test {
 
 namespace {
 
-TEST_F(RamTest, LUI) {
-    int instr = 0b0000'0000'0000'0000'0000'0000'0011'0111;
-    // dut->instr = instr;
-    // dut->eval();
-    // ASSERT_EQ(dut->alu_op, Valu_rv32i::alu_op_e::ALU_ADD);
-} 
-
+TEST_F(RamTest, READ_WRITE) {
+    uint32_t vals[] = {
+        0x00000001,
+        0x00000002,
+        0x00000003,
+        0x00000004,
+    };
+    int length = sizeof(vals);
+    int i = 0;
+    while(i < length) {
+        dut->ram->inner_ram[i] = vals[i];
+        i++;
+    }
+}
 }  // namespace
 

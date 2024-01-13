@@ -48,7 +48,6 @@ enable_testing()
 # common settings
 add_library(gtest_shared
   test_bench/verilator/main.cpp
-  test_bench/verilator/rv32i/rom.txt
 )
 target_link_libraries(
   gtest_shared
