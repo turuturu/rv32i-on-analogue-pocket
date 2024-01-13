@@ -18,7 +18,7 @@ module decoder import rv32i::*;
   output mem_op_e mem_op                   // memory write enable
 );
   opcode_e opcode;
-  optype_e optype;
+  optype_e optype/*verilator public*/;
 
   assign opcode = opcode_e'(instr[6:0]);
 
@@ -43,8 +43,8 @@ module decoder import rv32i::*;
         rs1 = 5'b0;
         rs2 = 5'b0;
         rd = instr.type_u.rd;
-        alu_input1_type = ALU_INPUT_IMM;
-        alu_input2_type = ALU_INPUT_NONE;
+        alu_input1_type = ALU_INPUT_PC;
+        alu_input2_type = ALU_INPUT_IMM;
         wb_from = WB_ALU;
         r_we = REG_WE;
         mem_op = MEM_LOAD;
@@ -83,7 +83,7 @@ module decoder import rv32i::*;
         rd = 5'b0;
         alu_input1_type = ALU_INPUT_REG;
         alu_input2_type = ALU_INPUT_REG;
-        wb_from = WB_PC;
+        wb_from = WB_NONE;
         r_we = REG_WD;
         mem_op = MEM_LOAD;
         imm = {{19{instr.type_b.imm1[6]}}, instr.type_b.imm1[6], instr.type_b.imm2[0], instr.type_b.imm1[5:0], instr.type_b.imm2[4:1], 1'b0};
@@ -153,7 +153,7 @@ module decoder import rv32i::*;
         alu_input1_type = ALU_INPUT_REG;
         alu_input2_type = ALU_INPUT_IMM;
         wb_from = WB_NONE;
-        r_we = REG_WE;
+        r_we = REG_WD;
         mem_op = MEM_STORE;
         imm = {{20{instr.type_s.imm1[6]}}, instr.type_s.imm1[6:0], instr.type_s.imm2[4:0]};
         case (instr.type_s.funct3)
@@ -213,6 +213,11 @@ module decoder import rv32i::*;
               alu_op = ALU_SRA;
             end
           end
+          default: begin
+            // never happens
+            alu_op = ALU_NOP;
+          end
+
         endcase
       end
       OP_OP: begin
