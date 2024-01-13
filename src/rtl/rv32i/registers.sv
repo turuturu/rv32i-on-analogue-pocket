@@ -14,7 +14,7 @@ module registers import rv32i::*;
     output logic [31:0] rs1_data,
     output logic [31:0] rs2_data
 );
-  logic [31:0] regs [0:31];
+  logic [31:0] regs [0:31]/*verilator public*/;
 
   always_ff @(posedge clk) begin
     if (we == REG_WE) begin
