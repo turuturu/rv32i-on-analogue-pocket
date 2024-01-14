@@ -38,8 +38,6 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-set(targets decoder; alu; ram; registers; rom; rv32i_top)
-
 ####################
 # Test
 ####################
@@ -55,8 +53,10 @@ target_link_libraries(
   GTest::gtest_main
 )
 
+# targets
+set(targets decoder; alu; csr_alu; csr_registers; ram; registers; rom; rv32i_top)
+
 # test bench
-set(targets decoder; alu; ram; registers; rom; rv32i_top)
 foreach(target IN LISTS targets)
   add_executable(test_rv32i_${target}
     test_bench/verilator/rv32i/tb_${target}.cpp

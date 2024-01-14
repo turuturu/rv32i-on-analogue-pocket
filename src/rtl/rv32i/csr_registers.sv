@@ -9,13 +9,13 @@ module csr_registers import rv32i::*;
     input reg_we_e we,
     input logic [11:0] csr_addr,
     input logic [31:0] wdata,
-    ouput logic [31:0] data
+    output logic [31:0] data
 );
-  logic [31:0] regs [0:4096]/*verilator public*/; // 16KB = 12bit address range
+  logic [31:0] regs [0:4095]/*verilator public*/; // 16KB = 12bit address range
 
   always_ff @(posedge clk) begin
     if (we == REG_WE) begin
-      regs[csr_addr] <= rd_data;
+      regs[csr_addr] <= wdata;
     end
   end
 
