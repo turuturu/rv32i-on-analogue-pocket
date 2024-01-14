@@ -39,6 +39,9 @@ module decoder import rv32i::*;
         r_we = REG_WE;
         mem_op = MEM_LOAD;
         imm = {instr.type_u.imm, 12'b0};
+        csr_op = CSR_NOP;
+        csr_we = REG_WD;
+        csr_alu_input_type = CSR_ALU_INPUT_NONE;
       end
       OP_AUIPC: begin
         optype = UTYPE;
@@ -52,6 +55,9 @@ module decoder import rv32i::*;
         r_we = REG_WE;
         mem_op = MEM_LOAD;
         imm = {instr.type_u.imm, 12'b0};
+        csr_op = CSR_NOP;
+        csr_we = REG_WD;
+        csr_alu_input_type = CSR_ALU_INPUT_NONE;
       end
       OP_JAL: begin
         optype = JTYPE;
@@ -65,6 +71,9 @@ module decoder import rv32i::*;
         r_we = REG_WE;
         mem_op = MEM_LOAD;
         imm = {{11{instr.type_j.imm[19]}}, instr.type_j.imm[19], instr.type_j.imm[7:0], instr.type_j.imm[8], instr.type_j.imm[18:9], 1'b0};
+        csr_op = CSR_NOP;
+        csr_we = REG_WD;
+        csr_alu_input_type = CSR_ALU_INPUT_NONE;
       end
       OP_JALR: begin
         optype = ITYPE;
@@ -78,6 +87,9 @@ module decoder import rv32i::*;
         r_we = REG_WE;
         mem_op = MEM_LOAD;
         imm = {{20{instr.type_i.imm[11]}}, instr.type_i.imm};
+        csr_op = CSR_NOP;
+        csr_we = REG_WD;
+        csr_alu_input_type = CSR_ALU_INPUT_NONE;
       end
       OP_BRANCH: begin
         optype = BTYPE;
@@ -90,6 +102,9 @@ module decoder import rv32i::*;
         r_we = REG_WD;
         mem_op = MEM_LOAD;
         imm = {{19{instr.type_b.imm1[6]}}, instr.type_b.imm1[6], instr.type_b.imm2[0], instr.type_b.imm1[5:0], instr.type_b.imm2[4:1], 1'b0};
+        csr_op = CSR_NOP;
+        csr_we = REG_WD;
+        csr_alu_input_type = CSR_ALU_INPUT_NONE;
         case (instr.type_b.funct3)
           3'b000: begin // BEQ
             alu_op = ALU_BEQ;
@@ -126,6 +141,9 @@ module decoder import rv32i::*;
         r_we = REG_WE;
         mem_op = MEM_LOAD;
         imm = {{20{instr.type_i.imm[11]}}, instr.type_i.imm};
+        csr_op = CSR_NOP;
+        csr_we = REG_WD;
+        csr_alu_input_type = CSR_ALU_INPUT_NONE;
         case (instr.type_i.funct3)
           3'b000: begin // LB
             alu_op = ALU_ADD;
@@ -159,6 +177,9 @@ module decoder import rv32i::*;
         r_we = REG_WD;
         mem_op = MEM_STORE;
         imm = {{20{instr.type_s.imm1[6]}}, instr.type_s.imm1[6:0], instr.type_s.imm2[4:0]};
+        csr_op = CSR_NOP;
+        csr_we = REG_WD;
+        csr_alu_input_type = CSR_ALU_INPUT_NONE;
         case (instr.type_s.funct3)
           3'b000: begin // SB
             alu_op = ALU_ADD;
@@ -186,7 +207,9 @@ module decoder import rv32i::*;
         r_we = REG_WE;
         mem_op = MEM_LOAD;
         imm = {{20{instr.type_i.imm[11]}}, instr.type_i.imm};
-
+        csr_op = CSR_NOP;
+        csr_we = REG_WD;
+        csr_alu_input_type = CSR_ALU_INPUT_NONE;
         unique case (instr.type_i.funct3)
           3'b000: begin // ADDI
             alu_op = ALU_ADD;
@@ -234,6 +257,9 @@ module decoder import rv32i::*;
         r_we = REG_WE;
         mem_op = MEM_LOAD;
         imm = 32'b0;
+        csr_op = CSR_NOP;
+        csr_we = REG_WD;
+        csr_alu_input_type = CSR_ALU_INPUT_NONE;
         unique case (instr.type_r.funct3)
           3'b000: begin // ADD, SUB
             if (instr.type_r.funct7 == 7'b0000000) begin
@@ -281,6 +307,9 @@ module decoder import rv32i::*;
         r_we = REG_WD;
         mem_op = MEM_LOAD;
         imm = 32'b0;
+        csr_op = CSR_NOP;
+        csr_we = REG_WD;
+        csr_alu_input_type = CSR_ALU_INPUT_NONE;
         if (instr.type_i.funct3 == 3'b000) begin // FENCE
           csr_op = CSR_NOP;
         end else begin // FENCE.I
@@ -297,7 +326,6 @@ module decoder import rv32i::*;
         alu_input2_type = ALU_INPUT_NONE;
         mem_op = MEM_LOAD;
         imm = {20'b0, instr.type_i.imm};
-
         unique case (instr.type_i.funct3)
           3'b000: begin
             if (instr.type_i.imm == 12'b000000000000) begin // ECALL
