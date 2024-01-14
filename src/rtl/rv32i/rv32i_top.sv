@@ -65,7 +65,7 @@ module rv32i_top import rv32i::*;
                   wb_from == WB_MEM ? ram_out :
                   32'b0;
 
-  assign csr_alu_input = csr_alu_input_type == CSR_ALU_INPUT_IMM ? imm :
+  assign csr_alu_input = csr_alu_input_type == CSR_ALU_INPUT_IMM ? {27'b0, rs1} :
                      csr_alu_input_type == CSR_ALU_INPUT_RS1 ? rs1_data :
                      32'b0;
 
