@@ -3,7 +3,6 @@
 
 `include "rv32i/rv32i.sv"
 `include "rv32i/alu.sv"
-`include "rv32i/csr_alu.sv"
 `include "rv32i/csr_registers.sv"
 `include "rv32i/decoder.sv"
 `include "rv32i/ram.sv"
@@ -54,22 +53,20 @@ module rv32i_top import rv32i::*;
   assign alu_input1 = alu_input1_type == ALU_INPUT1_IMM ? imm :
                       alu_input1_type == ALU_INPUT1_RS1 ? rs1_data : 
                       alu_input1_type == ALU_INPUT1_PC ? pc : 
+                      alu_input1_type == ALU_INPUT1_CSR ? csr_data : 
                       32'b0;
   assign alu_input2 = alu_input2_type == ALU_INPUT2_IMM ? imm :
+                      alu_input2_type == ALU_INPUT2_RS1 ? rs1_data : 
                       alu_input2_type == ALU_INPUT2_RS2 ? rs2_data : 
                       32'b0;
 
   assign reg_wb = wb_from == WB_ALU ? alu_result :
                   wb_from == WB_PC ? next_pc :
                   wb_from == WB_MEM ? ram_out :
+                  wb_from == WB_CSR ? csr_data :
                   32'b0;
 
-  assign csr_alu_input = csr_alu_input_type == CSR_ALU_INPUT_IMM ? {27'b0, rs1} :
-                     csr_alu_input_type == CSR_ALU_INPUT_RS1 ? rs1_data :
-                     32'b0;
-
-  assign csr_addr = csr_alu_input_type == CSR_ALU_INPUT_NONE ? 12'b0 :
-                    imm[11:0];
+  assign csr_addr = imm[11:0];
 
   always_ff @(posedge clk or reset_n) begin
     if (reset_n == 0) begin
@@ -86,6 +83,7 @@ module rv32i_top import rv32i::*;
     // -- Outputs
     .data(instr)
   );
+  
   decoder decoder0 (
     // -- Inputs
     .instr,
@@ -100,9 +98,7 @@ module rv32i_top import rv32i::*;
     .wb_from,
     .r_we,
     .mem_op,
-    .csr_op,
-    .csr_we,
-    .csr_alu_input_type
+    .csr_we
   );
 
   registers registers0 (
@@ -123,7 +119,7 @@ module rv32i_top import rv32i::*;
     .clk,
     .we(csr_we),
     .csr_addr(csr_addr),
-    .wdata(csr_alu_result),
+    .wdata(alu_result),
     // -- Outputs
     .data(csr_data)
   );
@@ -136,15 +132,6 @@ module rv32i_top import rv32i::*;
     // -- Outputs
     .result(alu_result),
     .branch_type(branch_type)
-  );
-
-  csr_alu csr_alu0 (
-    // -- Inputs
-    .csr_data(csr_data),
-    .data(csr_alu_input),
-    .csr_op(csr_op),
-    // -- Outputs
-    .result(csr_alu_result)
   );
 
   ram ram0 (

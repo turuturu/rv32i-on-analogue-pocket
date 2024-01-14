@@ -332,6 +332,16 @@ TEST_F(AluTest, AND) {
     ASSERT_EQ(dut->result, 0x00000000);
     ASSERT_EQ(dut->branch_type, Vrv32i_alu_rv32i::branch_type_e::BRANCH_NONE);
 }
+
+TEST_F(AluTest, CSRRC) {
+    dut->data1 = 0x0000000c; // 1100
+    dut->data2 = 0x0000000a; // 1010
+    dut->alu_op = Vrv32i_alu_rv32i::alu_op_e::ALU_CSRRC;
+    dut->eval();
+    ASSERT_EQ(dut->result, 0x00000004);
+    ASSERT_EQ(dut->branch_type, Vrv32i_alu_rv32i::branch_type_e::BRANCH_NONE);
+}
+
 TEST_F(AluTest, NOP) {
     dut->data1 = 0x00000001;
     dut->data2 = 0x00000002;

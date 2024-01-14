@@ -91,6 +91,10 @@ module alu import rv32i::*;
         result = data1 & data2;
         branch_type = BRANCH_NONE;
       end
+      ALU_CSRRC: begin
+        result = data1 & ~data2;
+        branch_type = BRANCH_NONE;
+      end
       ALU_NOP: begin
         result = 32'b0;
         branch_type = BRANCH_NONE;

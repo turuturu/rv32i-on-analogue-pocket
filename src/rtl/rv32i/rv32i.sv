@@ -35,6 +35,7 @@ typedef enum logic [2:0] {
 
 typedef enum logic [1:0] {
   ALU_INPUT2_IMM,
+  ALU_INPUT2_RS1,
   ALU_INPUT2_RS2,
   ALU_INPUT2_NONE
 } alu_input2_type_e /*verilator public*/;

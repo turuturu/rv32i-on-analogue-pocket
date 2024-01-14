@@ -54,7 +54,7 @@ target_link_libraries(
 )
 
 # targets
-set(targets decoder; alu; csr_alu; csr_registers; ram; registers; rom; rv32i_top)
+set(targets decoder; alu; csr_registers; ram; registers; rom; rv32i_top)
 
 # test bench
 foreach(target IN LISTS targets)
