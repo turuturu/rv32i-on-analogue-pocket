@@ -24,8 +24,8 @@ module rv32i_top import rv32i::*;
   logic [4:0] rd;                          // destination register
   logic [31:0] imm;                        // immediate
   alu_op_e alu_op;                         // ALU operation
-  alu_input_type_e alu_input1_type;        // ALU OPTYPE 1
-  alu_input_type_e alu_input2_type;        // ALU OPTYPE 1
+  alu_input1_type_e alu_input1_type;        // ALU OPTYPE 1
+  alu_input2_type_e alu_input2_type;        // ALU OPTYPE 1
   wb_from_e wb_from;                       // write back from
   reg_we_e r_we;                           // register write enable
   mem_op_e mem_op;                         // memory write enable
@@ -51,13 +51,12 @@ module rv32i_top import rv32i::*;
                   branch_type == BRANCH_ABSOLUTE ? alu_result :
                   pc + 4;
 
-  assign alu_input1 = alu_input1_type == ALU_INPUT_IMM ? imm :
-                      alu_input1_type == ALU_INPUT_REG ? rs1_data : 
-                      alu_input1_type == ALU_INPUT_PC ? pc : 
+  assign alu_input1 = alu_input1_type == ALU_INPUT1_IMM ? imm :
+                      alu_input1_type == ALU_INPUT1_RS1 ? rs1_data : 
+                      alu_input1_type == ALU_INPUT1_PC ? pc : 
                       32'b0;
-  assign alu_input2 = alu_input2_type == ALU_INPUT_IMM ? imm :
-                      alu_input2_type == ALU_INPUT_REG ? rs2_data : 
-                      alu_input2_type == ALU_INPUT_PC ? pc : 
+  assign alu_input2 = alu_input2_type == ALU_INPUT2_IMM ? imm :
+                      alu_input2_type == ALU_INPUT2_RS2 ? rs2_data : 
                       32'b0;
 
   assign reg_wb = wb_from == WB_ALU ? alu_result :
