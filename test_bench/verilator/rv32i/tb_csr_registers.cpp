@@ -52,8 +52,6 @@ TEST_F(CsrRegistersTest, READ_WRITE) {
         ASSERT_EQ(val, dut->data);
         i++;
     }
-} 
-
-
+}
 }  // namespace
 
