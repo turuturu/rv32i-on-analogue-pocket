@@ -16,18 +16,21 @@ module rv32i_top import rv32i::*;
   logic [31:0] pc;
   logic [31:0] next_pc;
 
-  rv32i_inst_u instr;               // instruction
-  logic [4:0] rs1;                  // source register 1
-  logic [4:0] rs2;                  // source register 2
-  logic [4:0] rd;                   // destination register
-  logic [31:0] imm;                 // immediate
-  alu_op_e alu_op;                  // ALU operation
-  alu_input_type_e alu_input1_type; // ALU OPTYPE 1
-  alu_input_type_e alu_input2_type; // ALU OPTYPE 1
-  wb_from_e wb_from;                // write back from
-  reg_we_e r_we;                    // register write enable
-  mem_op_e mem_op;                  // memory write enable
-  branch_type_e branch_type;        // branch type
+  rv32i_inst_u instr;                      // instruction
+  logic [4:0] rs1;                         // source register 1
+  logic [4:0] rs2;                         // source register 2
+  logic [4:0] rd;                          // destination register
+  logic [31:0] imm;                        // immediate
+  alu_op_e alu_op;                         // ALU operation
+  alu_input_type_e alu_input1_type;        // ALU OPTYPE 1
+  alu_input_type_e alu_input2_type;        // ALU OPTYPE 1
+  wb_from_e wb_from;                       // write back from
+  reg_we_e r_we;                           // register write enable
+  mem_op_e mem_op;                         // memory write enable
+  branch_type_e branch_type;               // branch type
+  csr_op_e csr_op;                         // CSR operation
+  reg_we_e csr_we;                         // CSR write enable
+  csr_alu_input_type_e csr_alu_input_type; // CSR ALU input type
 
   logic [31:0] rs1_data; // rs1 output
   logic [31:0] rs2_data; // rs2 output
@@ -84,7 +87,10 @@ module rv32i_top import rv32i::*;
     .alu_input2_type,
     .wb_from,
     .r_we,
-    .mem_op
+    .mem_op,
+    .csr_op,
+    .csr_we,
+    .csr_alu_input_type
   );
 
   registers registers0 (

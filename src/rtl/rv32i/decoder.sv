@@ -5,17 +5,20 @@
 
 module decoder import rv32i::*;
 (
-  input  rv32i_inst_u instr,               // instruction
-  output logic [4:0] rs1,                  // source register 1
-  output logic [4:0] rs2,                  // source register 2
-  output logic [4:0] rd,                   // destination register
-  output logic [31:0] imm,                 // immediate
-  output alu_op_e alu_op,                  // ALU operation
-  output alu_input_type_e alu_input1_type, // ALU OPTYPE 1
-  output alu_input_type_e alu_input2_type, // ALU OPTYPE 1
-  output wb_from_e wb_from,                // write back from
-  output reg_we_e r_we,                    // register write enable
-  output mem_op_e mem_op                   // memory write enable
+  input  rv32i_inst_u instr,                     // instruction
+  output logic [4:0] rs1,                        // source register 1
+  output logic [4:0] rs2,                        // source register 2
+  output logic [4:0] rd,                         // destination register
+  output logic [31:0] imm,                       // immediate
+  output alu_op_e alu_op,                        // ALU operation
+  output alu_input_type_e alu_input1_type,       // ALU OPTYPE 1
+  output alu_input_type_e alu_input2_type,       // ALU OPTYPE 1
+  output wb_from_e wb_from,                      // write back from
+  output reg_we_e r_we,                          // register write enable
+  output mem_op_e mem_op,                        // memory write enable
+  output csr_op_e csr_op,                        // CSR operation
+  output reg_we_e csr_we,                        // CSR write enable
+  output csr_alu_input_type_e csr_alu_input_type // CSR input type
 );
   opcode_e opcode;
   optype_e optype/*verilator public*/;
@@ -278,19 +281,86 @@ module decoder import rv32i::*;
         r_we = REG_WD;
         mem_op = MEM_LOAD;
         imm = 32'b0;
+        if (instr.type_i.funct3 == 3'b000) begin // FENCE
+          csr_op = CSR_NOP;
+        end else begin // FENCE.I
+          csr_op = CSR_NOP;
+        end
       end
       OP_SYSTEM: begin
         optype = ITYPE;
         alu_op = ALU_NOP;
-        rs1 = 5'b0;
+        rs1 = instr.type_i.rs1;
         rs2 = 5'b0;
-        rd = 5'b0;
+        rd = instr.type_i.rd;
         alu_input1_type = ALU_INPUT_NONE;
         alu_input2_type = ALU_INPUT_NONE;
-        wb_from = WB_NONE;
-        r_we = REG_WD;
         mem_op = MEM_LOAD;
-        imm = 32'b0;
+        imm = {20'b0, instr.type_i.imm};
+
+        unique case (instr.type_i.funct3)
+          3'b000: begin
+            if (instr.type_i.imm == 12'b000000000000) begin // ECALL
+              csr_op = CSR_NOP;
+            end else begin // EBREAK
+              csr_op = CSR_NOP;
+            end
+            wb_from = WB_NONE;
+            r_we = REG_WD;
+            csr_we = REG_WD;
+            csr_alu_input_type = CSR_ALU_INPUT_NONE;
+          end
+          3'b001: begin // CSRRW
+            csr_op = CSR_RW;
+            wb_from = WB_CSR;
+            r_we = REG_WE;
+            csr_we = REG_WE;
+            csr_alu_input_type = CSR_ALU_INPUT_RS1;
+          end
+          3'b010: begin // CSRRS
+            csr_op = CSR_RS;
+            wb_from = WB_CSR;
+            r_we = REG_WE;
+            csr_we = REG_WE;
+            csr_alu_input_type = CSR_ALU_INPUT_RS1;
+          end
+          3'b011: begin // CSRRC
+            csr_op = CSR_RC;
+            wb_from = WB_CSR;
+            r_we = REG_WE;
+            csr_we = REG_WE;
+            csr_alu_input_type = CSR_ALU_INPUT_RS1;
+          end
+          3'b101: begin // CSRRWI
+            csr_op = CSR_RW;
+            wb_from = WB_CSR;
+            r_we = REG_WE;
+            csr_we = REG_WE;
+            csr_alu_input_type = CSR_ALU_INPUT_IMM;
+          end
+          3'b110: begin // CSRRSI
+            csr_op = CSR_RS;
+            wb_from = WB_CSR;
+            r_we = REG_WE;
+            csr_we = REG_WE;
+            csr_alu_input_type = CSR_ALU_INPUT_IMM;
+          end
+          3'b111: begin // CSRRCI
+            csr_op = CSR_RC;
+            wb_from = WB_CSR;
+            r_we = REG_WE;
+            csr_we = REG_WE;
+            csr_alu_input_type = CSR_ALU_INPUT_IMM;
+          end
+          default: begin
+            // never happens
+            csr_op = CSR_NOP;
+            wb_from = WB_NONE;
+            r_we = REG_WD;
+            csr_we = REG_WD;
+            csr_alu_input_type = CSR_ALU_INPUT_IMM;
+          end
+        endcase
       end
       default: begin
         optype = ITYPE;
@@ -302,6 +372,9 @@ module decoder import rv32i::*;
         alu_input2_type = ALU_INPUT_NONE;
         wb_from = WB_NONE;
         r_we = REG_WD;
+        csr_op = CSR_NOP;
+        csr_we = REG_WD;
+        csr_alu_input_type = CSR_ALU_INPUT_NONE;
         mem_op = MEM_LOAD;
         imm = 32'b0;
       end

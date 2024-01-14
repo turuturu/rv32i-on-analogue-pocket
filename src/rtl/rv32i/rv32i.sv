@@ -31,6 +31,12 @@ typedef enum logic [1:0] {
   ALU_INPUT_NONE
 } alu_input_type_e /*verilator public*/;
 
+typedef enum logic [1:0] {
+  CSR_ALU_INPUT_IMM,
+  CSR_ALU_INPUT_RS1,
+  CSR_ALU_INPUT_NONE
+} csr_alu_input_type_e /*verilator public*/;
+
 typedef enum logic {
   MEM_LOAD,
   MEM_STORE
@@ -47,10 +53,11 @@ typedef enum logic {
   REG_WD
 } reg_we_e /*verilator public*/;
 
-typedef enum logic [1:0] {
+typedef enum logic [2:0] {
   WB_MEM,
   WB_ALU,
   WB_PC,
+  WB_CSR,
   WB_NONE
 } wb_from_e /*verilator public*/;
 
@@ -76,6 +83,20 @@ typedef enum logic [2:0] {
   UTYPE,
   JTYPE
 } optype_e /*verilator public*/;
+
+typedef enum logic [1:0] {
+  PV_USER       = 2'b00,
+  PV_SUPERVISOR = 2'b01,
+  PV_HYPERVISOR = 2'b10,
+  PV_MACHINE    = 2'b11
+} privilege_level_e/*verilator public*/;
+
+typedef enum logic [1:0] {
+  CSR_NOP,
+  CSR_RW,
+  CSR_RS,
+  CSR_RC
+} csr_op_e/*verilator public*/;
 
 typedef struct packed {
   logic [6:0] funct7;
