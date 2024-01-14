@@ -3,6 +3,8 @@
 
 `include "rv32i/rv32i.sv"
 `include "rv32i/alu.sv"
+`include "rv32i/csr_alu.sv"
+`include "rv32i/csr_registers.sv"
 `include "rv32i/decoder.sv"
 `include "rv32i/ram.sv"
 `include "rv32i/registers.sv"
@@ -30,13 +32,17 @@ module rv32i_top import rv32i::*;
   branch_type_e branch_type;               // branch type
   csr_op_e csr_op;                         // CSR operation
   reg_we_e csr_we;                         // CSR write enable
+  logic [11:0] csr_addr;                   // CSR address
   csr_alu_input_type_e csr_alu_input_type; // CSR ALU input type
 
   logic [31:0] rs1_data; // rs1 output
   logic [31:0] rs2_data; // rs2 output
+  logic [31:0] csr_data; // csr alu result
   logic [31:0] alu_input1; // alu input 1
   logic [31:0] alu_input2; // alu input 2
   logic [31:0] alu_result; // alu result
+  logic [31:0] csr_alu_result; // csr alu result
+  logic [31:0] csr_alu_input; // csr alu input
 
   logic [31:0] ram_out; // ram output
   logic [31:0] reg_wb; // register write back
@@ -58,6 +64,13 @@ module rv32i_top import rv32i::*;
                   wb_from == WB_PC ? next_pc :
                   wb_from == WB_MEM ? ram_out :
                   32'b0;
+
+  assign csr_alu_input = csr_alu_input_type == CSR_ALU_INPUT_IMM ? imm :
+                     csr_alu_input_type == CSR_ALU_INPUT_RS1 ? rs1_data :
+                     32'b0;
+
+  assign csr_addr = csr_alu_input_type == CSR_ALU_INPUT_NONE ? 12'b0 :
+                    imm[11:0];
 
   always_ff @(posedge clk or reset_n) begin
     if (reset_n == 0) begin
@@ -106,6 +119,16 @@ module rv32i_top import rv32i::*;
     .rs2_data(rs2_data)
   );
 
+  csr_registers csr_registers0 (
+    // -- Inputs
+    .clk,
+    .we(csr_we),
+    .csr_addr(csr_addr),
+    .wdata(csr_alu_result),
+    // -- Outputs
+    .data(csr_data)
+  );
+
   alu alu0 (
     // -- Inputs
     .data1(alu_input1),
@@ -114,6 +137,15 @@ module rv32i_top import rv32i::*;
     // -- Outputs
     .result(alu_result),
     .branch_type(branch_type)
+  );
+
+  csr_alu csr_alu0 (
+    // -- Inputs
+    .csr_data(csr_data),
+    .data(csr_alu_input),
+    .csr_op(csr_op),
+    // -- Outputs
+    .result(csr_alu_result)
   );
 
   ram ram0 (
