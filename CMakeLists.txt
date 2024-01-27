@@ -28,6 +28,7 @@ set(CMAKE_COLOR_DIAGNOSTICS ON)
 set(CMAKE_COMPILE_FLAGS "-Wall -g -fsanitize=address")
 set(CMAKE_LINK_FLAGS "-fsanitize=address")
 
+
 include(FetchContent)
 FetchContent_Declare(
   googletest
@@ -39,10 +40,9 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 ####################
-# Test
+# Google Test
 ####################
 enable_testing()
-
 # common settings
 add_library(gtest_shared
   test_bench/verilator/main.cpp
@@ -53,6 +53,24 @@ target_link_libraries(
   GTest::gtest_main
 )
 
+####################
+# riscv-tests
+####################
+set(RISCV_TESTS_BIN_DIR "${CMAKE_BINARY_DIR}/riscv-tests-bin")
+file(COPY riscv-tests DESTINATION .)
+add_custom_target(
+  riscv-tests-build ALL
+  COMMAND "./configure" "--prefix=${RISCV_TESTS_BIN_DIR}"
+  COMMAND "make" "isa"
+  COMMAND "make" "install"
+  WORKING_DIRECTORY riscv-tests
+)
+# file(GLOB RISCV_TESTS_BIN "${RISCV_TESTS_BIN_DIR}/share/riscv-tests/isa/rv32ui-p-*")
+add_dependencies(gtest_shared riscv-tests-build)
+
+####################
+# Test
+####################
 # targets
 set(targets decoder; alu; csr_registers; ram; registers; rom; rv32i_top)
 
