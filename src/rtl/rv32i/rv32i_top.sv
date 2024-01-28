@@ -76,7 +76,7 @@ module rv32i_top import rv32i::*;
     end
   end
 
-  rom rom0 (
+  rom rom0(
     // -- Inputs
     .clk,
     .addr(pc),
