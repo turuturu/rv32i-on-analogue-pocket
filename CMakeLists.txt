@@ -85,9 +85,13 @@ endforeach()
 ####################
 # Verilate
 ####################
-
+list(APPEND VERILATOR_ARGS --trace)
+list(APPEND VERILATOR_ARGS --trace-params)
+list(APPEND VERILATOR_ARGS --trace-structs)
 list(APPEND VERILATOR_ARGS --trace-underscore )
 list(APPEND VERILATOR_ARGS --public )
+
+# --trace --trace-params --trace-structs --trace-underscore \
 
 foreach(target IN LISTS targets)
   verilate("test_rv32i_${target}"
