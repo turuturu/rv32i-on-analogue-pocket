@@ -70,6 +70,20 @@ typedef enum logic [2:0] {
   WB_NONE
 } wb_from_e /*verilator public*/;
 
+typedef enum logic [2:0] {
+  REG_MASK_B,
+  REG_MASK_H,
+  REG_MASK_BX,
+  REG_MASK_HX,
+  REG_MASK_W
+} reg_mask_e /*verilator public*/;
+
+typedef enum logic [1:0] {
+  RAM_MASK_B,
+  RAM_MASK_H,
+  RAM_MASK_W
+} ram_mask_e /*verilator public*/;
+
 typedef enum logic [6:0] {
   OP_LUI    = 7'b0110111,
   OP_AUIPC  = 7'b0010111,

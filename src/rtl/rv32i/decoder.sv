@@ -11,9 +11,11 @@ module decoder import rv32i::*;
   output logic [4:0] rd,                         // destination register
   output logic [31:0] imm,                       // immediate
   output alu_op_e alu_op,                        // ALU operation
-  output alu_input1_type_e alu_input1_type,       // ALU OPTYPE 1
-  output alu_input2_type_e alu_input2_type,       // ALU OPTYPE 1
+  output alu_input1_type_e alu_input1_type,      // ALU OPTYPE 1
+  output alu_input2_type_e alu_input2_type,      // ALU OPTYPE 1
   output wb_from_e wb_from,                      // write back from
+  output reg_mask_e reg_mask,                    // reg mask
+  output ram_mask_e ram_mask,                    // ram mask
   output reg_we_e r_we,                          // register write enable
   output mem_op_e mem_op,                        // memory write enable
   output reg_we_e csr_we                         // CSR write enable
@@ -34,6 +36,8 @@ module decoder import rv32i::*;
         alu_input1_type = ALU_INPUT1_IMM;
         alu_input2_type = ALU_INPUT2_NONE;
         wb_from = WB_ALU;
+        reg_mask = REG_MASK_W;
+        ram_mask = RAM_MASK_W;
         r_we = REG_WE;
         mem_op = MEM_LOAD;
         imm = {instr.type_u.imm, 12'b0};
@@ -48,6 +52,8 @@ module decoder import rv32i::*;
         alu_input1_type = ALU_INPUT1_PC;
         alu_input2_type = ALU_INPUT2_IMM;
         wb_from = WB_ALU;
+        reg_mask = REG_MASK_W;
+        ram_mask = RAM_MASK_W;
         r_we = REG_WE;
         mem_op = MEM_LOAD;
         imm = {instr.type_u.imm, 12'b0};
@@ -62,6 +68,8 @@ module decoder import rv32i::*;
         alu_input1_type = ALU_INPUT1_PC;
         alu_input2_type = ALU_INPUT2_IMM;
         wb_from = WB_PC;
+        reg_mask = REG_MASK_W;
+        ram_mask = RAM_MASK_W;
         r_we = REG_WE;
         mem_op = MEM_LOAD;
         imm = {{11{instr.type_j.imm[19]}}, instr.type_j.imm[19], instr.type_j.imm[7:0], instr.type_j.imm[8], instr.type_j.imm[18:9], 1'b0};
@@ -76,6 +84,8 @@ module decoder import rv32i::*;
         alu_input1_type = ALU_INPUT1_RS1;
         alu_input2_type = ALU_INPUT2_IMM;
         wb_from = WB_PC;
+        reg_mask = REG_MASK_W;
+        ram_mask = RAM_MASK_W;
         r_we = REG_WE;
         mem_op = MEM_LOAD;
         imm = {{20{instr.type_i.imm[11]}}, instr.type_i.imm};
@@ -89,6 +99,8 @@ module decoder import rv32i::*;
         alu_input1_type = ALU_INPUT1_RS1;
         alu_input2_type = ALU_INPUT2_RS2;
         wb_from = WB_NONE;
+        reg_mask = REG_MASK_W;
+        ram_mask = RAM_MASK_W;
         r_we = REG_WD;
         mem_op = MEM_LOAD;
         imm = {{19{instr.type_b.imm1[6]}}, instr.type_b.imm1[6], instr.type_b.imm2[0], instr.type_b.imm1[5:0], instr.type_b.imm2[4:1], 1'b0};
@@ -126,6 +138,7 @@ module decoder import rv32i::*;
         alu_input1_type = ALU_INPUT1_RS1;
         alu_input2_type = ALU_INPUT2_IMM;
         wb_from = WB_MEM;
+        ram_mask = RAM_MASK_W;
         r_we = REG_WE;
         mem_op = MEM_LOAD;
         imm = {{20{instr.type_i.imm[11]}}, instr.type_i.imm};
@@ -133,22 +146,28 @@ module decoder import rv32i::*;
         case (instr.type_i.funct3)
           3'b000: begin // LB
             alu_op = ALU_ADD;
+            reg_mask = REG_MASK_BX;
           end
           3'b001: begin // LH
             alu_op = ALU_ADD;
+            reg_mask = REG_MASK_HX;
           end
           3'b010: begin // LW
             alu_op = ALU_ADD;
+            reg_mask = REG_MASK_W;
           end
           3'b100: begin // LBU
             alu_op = ALU_ADD;
+            reg_mask = REG_MASK_B;
           end
           3'b101: begin // LHU
             alu_op = ALU_ADD;
+            reg_mask = REG_MASK_H;
           end
           default: begin
             // never happens
             alu_op = ALU_NOP;
+            reg_mask = REG_MASK_W;
           end
         endcase
       end
@@ -160,6 +179,7 @@ module decoder import rv32i::*;
         alu_input1_type = ALU_INPUT1_RS1;
         alu_input2_type = ALU_INPUT2_IMM;
         wb_from = WB_NONE;
+        reg_mask = REG_MASK_W;
         r_we = REG_WD;
         mem_op = MEM_STORE;
         imm = {{20{instr.type_s.imm1[6]}}, instr.type_s.imm1[6:0], instr.type_s.imm2[4:0]};
@@ -167,16 +187,20 @@ module decoder import rv32i::*;
         case (instr.type_s.funct3)
           3'b000: begin // SB
             alu_op = ALU_ADD;
+            ram_mask = RAM_MASK_B;
           end
           3'b001: begin // SH
             alu_op = ALU_ADD;
+            ram_mask = RAM_MASK_H;
           end
           3'b010: begin // SW
             alu_op = ALU_ADD;
+            ram_mask = RAM_MASK_W;
           end
           default: begin
             // never happens
             alu_op = ALU_NOP;
+            ram_mask = RAM_MASK_W;
           end
         endcase
       end
@@ -188,6 +212,8 @@ module decoder import rv32i::*;
         alu_input1_type = ALU_INPUT1_RS1;
         alu_input2_type = ALU_INPUT2_IMM;
         wb_from = WB_ALU;
+        reg_mask = REG_MASK_W;
+        ram_mask = RAM_MASK_W;
         r_we = REG_WE;
         mem_op = MEM_LOAD;
         imm = {{20{instr.type_i.imm[11]}}, instr.type_i.imm};
@@ -236,6 +262,8 @@ module decoder import rv32i::*;
         alu_input1_type = ALU_INPUT1_RS1;
         alu_input2_type = ALU_INPUT2_RS2;
         wb_from = WB_ALU;
+        reg_mask = REG_MASK_W;
+        ram_mask = RAM_MASK_W;
         r_we = REG_WE;
         mem_op = MEM_LOAD;
         imm = 32'b0;
@@ -284,6 +312,8 @@ module decoder import rv32i::*;
         alu_input1_type = ALU_INPUT1_NONE;
         alu_input2_type = ALU_INPUT2_NONE;
         wb_from = WB_NONE;
+        reg_mask = REG_MASK_W;
+        ram_mask = RAM_MASK_W;
         r_we = REG_WD;
         mem_op = MEM_LOAD;
         imm = 32'b0;
@@ -299,6 +329,8 @@ module decoder import rv32i::*;
         rs1 = instr.type_i.rs1;
         rs2 = 5'b0;
         rd = instr.type_i.rd;
+        reg_mask = REG_MASK_W;
+        ram_mask = RAM_MASK_W;
         mem_op = MEM_LOAD;
         imm = {20'b0, instr.type_i.imm};
         unique case (instr.type_i.funct3)
@@ -383,6 +415,8 @@ module decoder import rv32i::*;
         alu_input1_type = ALU_INPUT1_NONE;
         alu_input2_type = ALU_INPUT2_NONE;
         wb_from = WB_NONE;
+        reg_mask = REG_MASK_W;
+        ram_mask = RAM_MASK_W;
         r_we = REG_WD;
         csr_we = REG_WD;
         mem_op = MEM_LOAD;
