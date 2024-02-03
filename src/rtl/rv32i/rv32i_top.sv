@@ -46,9 +46,10 @@ module rv32i_top import rv32i::*;
   logic [31:0] ram_out; // ram output
   logic [31:0] reg_wb; // register write back
 
-  assign next_pc = branch_type == BRANCH_RELATIVE ? pc + 4 + imm :
-                  branch_type == BRANCH_ABSOLUTE ? alu_result :
-                  pc + 4;
+  assign next_pc = reset_n == 0 ? pc:
+                   branch_type == BRANCH_RELATIVE ? pc + 4 + imm :
+                   branch_type == BRANCH_ABSOLUTE ? alu_result :
+                   pc + 4;
 
   assign alu_input1 = alu_input1_type == ALU_INPUT1_IMM ? imm :
                       alu_input1_type == ALU_INPUT1_RS1 ? rs1_data : 
@@ -68,7 +69,7 @@ module rv32i_top import rv32i::*;
 
   assign csr_addr = imm[11:0];
 
-  always_ff @(posedge clk or reset_n) begin
+  always_ff @(posedge clk or negedge reset_n) begin
     if (reset_n == 0) begin
       pc <= 32'h8000_0000;
     end else begin
@@ -79,7 +80,7 @@ module rv32i_top import rv32i::*;
   rom rom0(
     // -- Inputs
     .clk,
-    .addr(pc),
+    .addr(next_pc),
     // -- Outputs
     .data(instr)
   );
