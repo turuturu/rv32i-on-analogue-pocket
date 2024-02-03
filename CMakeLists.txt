@@ -59,6 +59,8 @@ target_link_libraries(
 set(RISCV_TESTS_BIN_DIR "${CMAKE_BINARY_DIR}/riscv-tests-bin")
 file(GLOB RISCV_TESTS_BIN "riscv-tests/target/share/riscv-tests/isa/*.bin")
 file(COPY ${RISCV_TESTS_BIN} DESTINATION ${RISCV_TESTS_BIN_DIR})
+file(GLOB RISCV_TESTS_DUMP "riscv-tests/target/share/riscv-tests/isa/*.dump")
+file(COPY ${RISCV_TESTS_DUMP} DESTINATION ${RISCV_TESTS_BIN_DIR})
 
 ####################
 # Test
