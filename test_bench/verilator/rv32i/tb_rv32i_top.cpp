@@ -68,7 +68,7 @@ class Rv32iTopTest : public ::testing::Test {
             dut->clk = 1;
             dut->eval();
             tfp->dump(cnt++);
-        dut->reset_n = 1;
+            dut->reset_n = 1;
             dut->clk = 0;
             dut->eval();
             tfp->dump(cnt++);
