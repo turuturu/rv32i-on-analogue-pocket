@@ -6,6 +6,8 @@
 `include "rv32i/csr_registers.sv"
 `include "rv32i/decoder.sv"
 `include "rv32i/ram.sv"
+`include "rv32i/ram_mask.sv"
+`include "rv32i/reg_mask.sv"
 `include "rv32i/registers.sv"
 `include "rv32i/rom.sv"
 
@@ -42,6 +44,8 @@ module rv32i_top import rv32i::*;
   logic [31:0] alu_input1; // alu input 1
   logic [31:0] alu_input2; // alu input 2
   logic [31:0] alu_result; // alu result
+  logic [31:0] masked_alu_result_reg; // masked alu result
+  logic [31:0] masked_alu_result_ram; // masked alu result
   logic [31:0] csr_alu_result; // csr alu result
   logic [31:0] csr_alu_input; // csr alu input
 
@@ -79,6 +83,22 @@ module rv32i_top import rv32i::*;
     end
   end
 
+  reg_mask reg_mask0 (
+    // -- Inputs
+    .data(alu_result),
+    .reg_mask_type(reg_mask),
+    // -- Outputs
+    .masked_data(masked_alu_result_reg)
+  );
+
+  ram_mask ram_mask0 (
+    // -- Inputs
+    .data(alu_result),
+    .ram_mask_type(ram_mask),
+    // -- Outputs
+    .masked_data(masked_alu_result_ram)
+  );
+
   rom rom0(
     // -- Inputs
     .clk,
@@ -113,7 +133,7 @@ module rv32i_top import rv32i::*;
     .rs1_addr(rs1),
     .rs2_addr(rs2),
     .rd_addr(rd),
-    .rd_data(alu_result),
+    .rd_data(masked_alu_result_reg),
     // -- Outputs
     .rs1_data(rs1_data),
     .rs2_data(rs2_data)
@@ -142,7 +162,7 @@ module rv32i_top import rv32i::*;
   ram ram0 (
     // -- Inputs
     .clk,
-    .addr(alu_result),
+    .addr(masked_alu_result_ram),
     .wdata(rs2_data),
     .mem_op(mem_op),
     // -- Outputs
