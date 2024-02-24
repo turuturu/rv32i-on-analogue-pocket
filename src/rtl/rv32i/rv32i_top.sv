@@ -60,7 +60,7 @@ module rv32i_top import rv32i::*;
                    (
                      branch_type == BRANCH_RELATIVE ? pc + imm :
                      branch_type == BRANCH_ABSOLUTE ? alu_result :
-                     pc
+                     pc + 4 // BRANCH_NONE
                    ) : pc;
   assign alu_input1 = alu_input1_type == ALU_INPUT1_IMM ? imm :
                       alu_input1_type == ALU_INPUT1_RS1 ? rs1_data : 
