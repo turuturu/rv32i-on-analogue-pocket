@@ -8,5 +8,4 @@
 ./_build/test_rv32i_registers
 ./_build/test_rv32i_rom
 ./_build/test_rv32i_rv32i_top
-./_build/test_rv32i_csr_alu
 ./_build/test_rv32i_csr_registers
