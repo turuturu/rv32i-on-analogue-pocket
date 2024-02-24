@@ -12,7 +12,9 @@
 #include "Vrv32i_rv32i_top_rom.h"
 #include "Vrv32i_rv32i_top_registers.h"
 #include "Vrv32i_rv32i_top_rv32i_top.h"
-
+#include <memory>
+#include <cstdio>
+#include <iomanip> // std::setfill, std::setwを使用するために必要
 
 std::string BASE_PATH = "_build/riscv-tests-bin/";
 class Rv32iTopTest : public ::testing::Test {
@@ -27,22 +29,28 @@ class Rv32iTopTest : public ::testing::Test {
     }
 
     int load_binary_to_rom(std::string filename){
-        std::ifstream ifs(BASE_PATH + filename, std::ios::binary);
-        ifs.seekg(0, std::ios::end);
-        long long int size = ifs.tellg();
-        ifs.seekg(0);
+        // バイナリファイルを開く
+        std::ifstream file(BASE_PATH + filename, std::ios::binary);
+        if (!file) {
+            std::cerr << "ファイルを開けませんでした。" << std::endl;
+            return 1;
+        }
+        // ファイルの終わりまで読み込む
+        int i = 0;
+        while (!file.eof()) {
+            uint32_t value;
+            file.read(reinterpret_cast<char*>(&value), sizeof(value));
+            // ファイルから正しく読み込めたか確認
+            if (file.gcount() == sizeof(value)) {
+                dut->rv32i_top->rom0->inner_rom[i/4] = value;
+            }
+            i += 4;
+        }
+        for(int j = 0; j < i/4; j++){
+            std::cout << std::setfill('0') << std::setw(8) << std::hex << dut->rv32i_top->rom0->inner_rom[j] << std::endl;
+        }
 
-        if (size < 0) {
-          std::cout << "Not find file: " << filename << std::endl;
-          return -1;
-        }
-        char* data = new char[size];
-        ifs.read(data, size);
-        for (uint32_t i = 0; i < size; i+=4) {
-            dut->rv32i_top->rom0->inner_rom[i/4] = data[i] | data[i+1] << 8 | data[i+2] << 16 | data[i+3] << 24;
-        }
-        delete data;
-        return size / 4;
+        return i / 4;
     }
 
     void run_test(std::string filename){
@@ -55,6 +63,9 @@ class Rv32iTopTest : public ::testing::Test {
         tfp->open(vcd_name.c_str());
 
         int len = load_binary_to_rom(bin_name.c_str());
+        ASSERT_EQ(dut->rv32i_top->rom0->inner_rom[0], 0x0500006f);
+        ASSERT_EQ(dut->rv32i_top->rom0->inner_rom[1], 0x34202f73);
+//        ASSERT_EQ(dut->rv32i_top->rom0->inner_rom[80], 0x00000093);
         int cnt = 0;
         dut->clk = 0;
         dut->reset_n = 0;
