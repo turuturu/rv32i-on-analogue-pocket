@@ -72,7 +72,7 @@ module rv32i_top import rv32i::*;
                       alu_input2_type == ALU_INPUT2_RS2 ? rs2_data : 
                       32'b0;
 
-  assign reg_wb = wb_from == WB_ALU ? alu_result :
+  assign reg_wb = wb_from == WB_ALU ? masked_alu_result_reg :
                   wb_from == WB_PC ? next_pc :
                   wb_from == WB_MEM ? ram_out :
                   wb_from == WB_CSR ? csr_data :
@@ -139,7 +139,7 @@ module rv32i_top import rv32i::*;
     .rs1_addr(rs1),
     .rs2_addr(rs2),
     .rd_addr(rd),
-    .rd_data(masked_alu_result_reg),
+    .rd_data(reg_wb),
     // -- Outputs
     .rs1_data(rs1_data),
     .rs2_data(rs2_data)
