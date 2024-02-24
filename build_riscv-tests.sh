@@ -1,7 +1,7 @@
 #!/bin/bash
 
 pushd riscv-tests
-./configure --prefix=$(pwd)/target
+./configure --prefix=$(pwd)/target --with-xlen=32
 make isa
 make install
 cd target/share/riscv-tests/isa
