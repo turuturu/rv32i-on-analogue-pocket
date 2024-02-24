@@ -58,7 +58,7 @@ module rv32i_top import rv32i::*;
                    pc_input_type == PC_INPUT_NEXT ? pc + 4 :
                    pc_input_type == PC_INPUT_ALU ? 
                    (
-                     branch_type == BRANCH_RELATIVE ? pc + 4 + imm :
+                     branch_type == BRANCH_RELATIVE ? pc + imm :
                      branch_type == BRANCH_ABSOLUTE ? alu_result :
                      pc
                    ) : pc;
