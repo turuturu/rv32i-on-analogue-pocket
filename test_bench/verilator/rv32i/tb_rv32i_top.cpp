@@ -72,7 +72,8 @@ class Rv32iTopTest : public ::testing::Test {
         dut->clk = 0;
         dut->eval();
         tfp->dump(cnt++);
-        for(int i = 0; i < len; i++){
+        while (dut->rv32i_top->pc != 0x80000044) {
+        // for(int i = 0; i < len; i++){
             dut->clk = 1;
             dut->eval();
             tfp->dump(cnt++);
