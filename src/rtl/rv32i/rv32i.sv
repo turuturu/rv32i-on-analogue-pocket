@@ -25,6 +25,12 @@ typedef enum logic [4:0] {
   ALU_NOP
 } alu_op_e /*verilator public*/;
 
+typedef enum logic [1:0] {
+  PC_INPUT_NEXT,
+  PC_INPUT_ALU,
+  PC_INPUT_CSR
+} pc_input_type_e /*verilator public*/;
+
 typedef enum logic [2:0] {
   ALU_INPUT1_IMM,
   ALU_INPUT1_RS1,

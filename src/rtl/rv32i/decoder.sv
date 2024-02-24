@@ -11,8 +11,9 @@ module decoder import rv32i::*;
   output logic [4:0] rd,                         // destination register
   output logic [31:0] imm,                       // immediate
   output alu_op_e alu_op,                        // ALU operation
-  output alu_input1_type_e alu_input1_type,      // ALU OPTYPE 1
-  output alu_input2_type_e alu_input2_type,      // ALU OPTYPE 1
+  output pc_input_type_e pc_input_type,          // PC INPUT TYPE
+  output alu_input1_type_e alu_input1_type,      // ALU INPUT TYPE 1
+  output alu_input2_type_e alu_input2_type,      // ALU INPUT TYPE 2
   output wb_from_e wb_from,                      // write back from
   output reg_mask_e reg_mask,                    // reg mask
   output ram_mask_e ram_mask,                    // ram mask
@@ -33,6 +34,7 @@ module decoder import rv32i::*;
         rs1 = 5'b0;
         rs2 = 5'b0;
         rd = instr.type_u.rd;
+        pc_input_type = PC_INPUT_NEXT;
         alu_input1_type = ALU_INPUT1_IMM;
         alu_input2_type = ALU_INPUT2_NONE;
         wb_from = WB_ALU;
@@ -49,6 +51,7 @@ module decoder import rv32i::*;
         rs1 = 5'b0;
         rs2 = 5'b0;
         rd = instr.type_u.rd;
+        pc_input_type = PC_INPUT_NEXT;
         alu_input1_type = ALU_INPUT1_PC;
         alu_input2_type = ALU_INPUT2_IMM;
         wb_from = WB_ALU;
@@ -65,6 +68,7 @@ module decoder import rv32i::*;
         rs1 = 5'b0;
         rs2 = 5'b0;
         rd = instr.type_j.rd;
+        pc_input_type = PC_INPUT_ALU;
         alu_input1_type = ALU_INPUT1_PC;
         alu_input2_type = ALU_INPUT2_IMM;
         wb_from = WB_PC;
@@ -81,6 +85,7 @@ module decoder import rv32i::*;
         rs1 = instr.type_i.rs1;
         rs2 = 5'b0;
         rd = instr.type_i.rd;
+        pc_input_type = PC_INPUT_ALU;
         alu_input1_type = ALU_INPUT1_RS1;
         alu_input2_type = ALU_INPUT2_IMM;
         wb_from = WB_PC;
@@ -96,6 +101,7 @@ module decoder import rv32i::*;
         rs1 = instr.type_b.rs1;
         rs2 = instr.type_b.rs2;
         rd = 5'b0;
+        pc_input_type = PC_INPUT_ALU;
         alu_input1_type = ALU_INPUT1_RS1;
         alu_input2_type = ALU_INPUT2_RS2;
         wb_from = WB_NONE;
@@ -135,6 +141,7 @@ module decoder import rv32i::*;
         rs1 = instr.type_i.rs1;
         rs2 = 5'b0;
         rd = instr.type_i.rd;
+        pc_input_type = PC_INPUT_NEXT;
         alu_input1_type = ALU_INPUT1_RS1;
         alu_input2_type = ALU_INPUT2_IMM;
         wb_from = WB_MEM;
@@ -176,6 +183,7 @@ module decoder import rv32i::*;
         rs1 = instr.type_s.rs1;
         rs2 = instr.type_s.rs2;
         rd = 5'b0;
+        pc_input_type = PC_INPUT_NEXT;
         alu_input1_type = ALU_INPUT1_RS1;
         alu_input2_type = ALU_INPUT2_IMM;
         wb_from = WB_NONE;
@@ -209,6 +217,7 @@ module decoder import rv32i::*;
         rs1 = instr.type_i.rs1;
         rs2 = 5'b0;
         rd = instr.type_i.rd;
+        pc_input_type = PC_INPUT_NEXT;
         alu_input1_type = ALU_INPUT1_RS1;
         alu_input2_type = ALU_INPUT2_IMM;
         wb_from = WB_ALU;
@@ -259,6 +268,7 @@ module decoder import rv32i::*;
         rs1 = instr.type_r.rs1;
         rs2 = instr.type_r.rs2;
         rd = instr.type_r.rd;
+        pc_input_type = PC_INPUT_NEXT;
         alu_input1_type = ALU_INPUT1_RS1;
         alu_input2_type = ALU_INPUT2_RS2;
         wb_from = WB_ALU;
@@ -309,6 +319,7 @@ module decoder import rv32i::*;
         rs1 = 5'b0;
         rs2 = 5'b0;
         rd = 5'b0;
+        pc_input_type = PC_INPUT_NEXT;
         alu_input1_type = ALU_INPUT1_NONE;
         alu_input2_type = ALU_INPUT2_NONE;
         wb_from = WB_NONE;
@@ -341,6 +352,7 @@ module decoder import rv32i::*;
             //   csr_op = CSR_NOP;
             // end
             alu_op = ALU_NOP;
+            pc_input_type = PC_INPUT_CSR;
             alu_input1_type = ALU_INPUT1_NONE;
             alu_input2_type = ALU_INPUT2_NONE;
             wb_from = WB_NONE;
@@ -349,6 +361,7 @@ module decoder import rv32i::*;
           end
           3'b001: begin // CSRRW
             alu_op = ALU_ADD;
+            pc_input_type = PC_INPUT_NEXT;
             alu_input1_type = ALU_INPUT1_RS1;
             alu_input2_type = ALU_INPUT2_NONE;
             wb_from = WB_CSR;
@@ -357,6 +370,7 @@ module decoder import rv32i::*;
           end
           3'b010: begin // CSRRS
             alu_op = ALU_OR;
+            pc_input_type = PC_INPUT_NEXT;
             alu_input1_type = ALU_INPUT1_CSR;
             alu_input2_type = ALU_INPUT2_RS1;
             wb_from = WB_CSR;
@@ -365,6 +379,7 @@ module decoder import rv32i::*;
           end
           3'b011: begin // CSRRC
             alu_op = ALU_CSRRC;
+            pc_input_type = PC_INPUT_NEXT;
             alu_input1_type = ALU_INPUT1_CSR;
             alu_input2_type = ALU_INPUT2_RS1;
             wb_from = WB_CSR;
@@ -373,6 +388,7 @@ module decoder import rv32i::*;
           end
           3'b101: begin // CSRRWI
             alu_op = ALU_ADD;
+            pc_input_type = PC_INPUT_NEXT;
             alu_input1_type = ALU_INPUT1_IMM;
             alu_input2_type = ALU_INPUT2_NONE;
             wb_from = WB_CSR;
@@ -381,6 +397,7 @@ module decoder import rv32i::*;
           end
           3'b110: begin // CSRRSI
             alu_op = ALU_OR;
+            pc_input_type = PC_INPUT_NEXT;
             alu_input1_type = ALU_INPUT1_CSR;
             alu_input2_type = ALU_INPUT2_IMM;
             wb_from = WB_CSR;
@@ -389,6 +406,7 @@ module decoder import rv32i::*;
           end
           3'b111: begin // CSRRCI
             alu_op = ALU_CSRRC;
+            pc_input_type = PC_INPUT_NEXT;
             alu_input1_type = ALU_INPUT1_CSR;
             alu_input2_type = ALU_INPUT2_RS1;
             wb_from = WB_CSR;
@@ -397,6 +415,7 @@ module decoder import rv32i::*;
           end
           default: begin
             alu_op = ALU_NOP;
+            pc_input_type = PC_INPUT_NEXT;
             alu_input1_type = ALU_INPUT1_NONE;
             alu_input2_type = ALU_INPUT2_NONE;
             // never happens
@@ -412,6 +431,7 @@ module decoder import rv32i::*;
         rs1 = 5'b0;
         rs2 = 5'b0;
         rd = 5'b0;
+        pc_input_type = PC_INPUT_NEXT;
         alu_input1_type = ALU_INPUT1_NONE;
         alu_input2_type = ALU_INPUT2_NONE;
         wb_from = WB_NONE;

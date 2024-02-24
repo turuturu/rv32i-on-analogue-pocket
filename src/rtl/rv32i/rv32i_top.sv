@@ -25,8 +25,9 @@ module rv32i_top import rv32i::*;
   logic [4:0] rd;                          // destination register
   logic [31:0] imm;                        // immediate
   alu_op_e alu_op;                         // ALU operation
-  alu_input1_type_e alu_input1_type;       // ALU OPTYPE 1
-  alu_input2_type_e alu_input2_type;       // ALU OPTYPE 1
+  pc_input_type_e pc_input_type;           // PC INPUT
+  alu_input1_type_e alu_input1_type;       // ALU INPUT TYPE 1
+  alu_input2_type_e alu_input2_type;       // ALU INPUT TYPE 2
   wb_from_e wb_from;                       // write back from
   reg_we_e r_we;                           // register write enable
   reg_mask_e reg_mask;                     // reg mask
@@ -53,10 +54,14 @@ module rv32i_top import rv32i::*;
   logic [31:0] reg_wb; // register write back
 
   assign next_pc = reset_n == 0 ? pc:
-                   branch_type == BRANCH_RELATIVE ? pc + 4 + imm :
-                   branch_type == BRANCH_ABSOLUTE ? alu_result :
-                   pc + 4;
-
+                   pc_input_type == PC_INPUT_CSR ? csr_data :
+                   pc_input_type == PC_INPUT_NEXT ? pc + 4 :
+                   pc_input_type == PC_INPUT_ALU ? 
+                   (
+                     branch_type == BRANCH_RELATIVE ? pc + 4 + imm :
+                     branch_type == BRANCH_ABSOLUTE ? alu_result :
+                     pc
+                   ) : pc;
   assign alu_input1 = alu_input1_type == ALU_INPUT1_IMM ? imm :
                       alu_input1_type == ALU_INPUT1_RS1 ? rs1_data : 
                       alu_input1_type == ALU_INPUT1_PC ? pc : 
@@ -116,6 +121,7 @@ module rv32i_top import rv32i::*;
     .rd,
     .imm,
     .alu_op,
+    .pc_input_type,
     .alu_input1_type,
     .alu_input2_type,
     .wb_from,
