@@ -73,7 +73,7 @@ module rv32i_top import rv32i::*;
                       32'b0;
 
   assign reg_wb = wb_from == WB_ALU ? masked_alu_result_reg :
-                  wb_from == WB_PC ? next_pc :
+                  wb_from == WB_PC ? pc + 4 :
                   wb_from == WB_MEM ? ram_out :
                   wb_from == WB_CSR ? csr_data :
                   32'b0;
