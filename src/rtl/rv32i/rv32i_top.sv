@@ -96,14 +96,6 @@ module rv32i_top import rv32i::*;
     .masked_data(masked_reg_wb)
   );
 
-  ram_mask ram_mask0 (
-    // -- Inputs
-    .data(alu_result),
-    .ram_mask_type(ram_mask),
-    // -- Outputs
-    .masked_data(masked_alu_result_ram)
-  );
-
   rom rom0(
     // -- Inputs
     .clk,
@@ -168,7 +160,7 @@ module rv32i_top import rv32i::*;
   ram ram0 (
     // -- Inputs
     .clk,
-    .addr(masked_alu_result_ram),
+    .addr(alu_result),
     .wdata(rs2_data),
     .mem_op(mem_op),
     .ram_mask(ram_mask),
