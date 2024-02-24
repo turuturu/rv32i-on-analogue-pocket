@@ -43,16 +43,32 @@ class Rv32iTopTest : public ::testing::Test {
             file.read(reinterpret_cast<char*>(&value), sizeof(value));
             // ファイルから正しく読み込めたか確認
             if (file.gcount() == sizeof(value)) {
-                if(i < 2000){
+                if(i < 0x2000){
                     dut->rv32i_top->rom0->inner_rom[i/4] = value;
                 }else{
-                    dut->rv32i_top->ram0->inner_ram[i/4] = value;
+                    dut->rv32i_top->ram0->inner_ram[i+0] = (uint8_t)(value & 0xff);
+                    dut->rv32i_top->ram0->inner_ram[i+1] = (uint8_t)((value & 0xff00) >> 8);
+                    dut->rv32i_top->ram0->inner_ram[i+2] = (uint8_t)((value & 0xff0000) >> 16);
+                    dut->rv32i_top->ram0->inner_ram[i+3] = (uint8_t)((value & 0xff000000) >> 24);
+                }
+                if(i == 0x2000 && filename == "rv32ui-p-lb.bin"){
+                  printf("%02x", dut->rv32i_top->ram0->inner_ram[i+0]);
+                  printf("%02x", dut->rv32i_top->ram0->inner_ram[i+1]);
+                  printf("%02x", dut->rv32i_top->ram0->inner_ram[i+2]);
+                  printf("%02x\n", dut->rv32i_top->ram0->inner_ram[i+3]);
+                //   std::cout << std::setfill('0') << std::setw(8) << std::hex << (uint8_t)dut->rv32i_top->ram0->inner_ram[i];
+                //   std::cout << std::setfill('0') << std::setw(8) << std::hex << (uint8_t)dut->rv32i_top->ram0->inner_ram[i+1];
+                //   std::cout << std::setfill('0') << std::setw(8) << std::hex << (uint8_t)dut->rv32i_top->ram0->inner_ram[i+2];
+                //   std::cout << std::setfill('0') << std::setw(8) << std::hex << (uint8_t)dut->rv32i_top->ram0->inner_ram[i+3] << std::endl;
                 }
             }
             i += 4;
         }
         // for(int j = 0; j < i/4; j++){
         //     std::cout << std::setfill('0') << std::setw(8) << std::hex << dut->rv32i_top->rom0->inner_rom[j] << std::endl;
+        // }
+        // for(int j = 0; j < i/4; j++){
+        //     std::cout << std::setfill('0') << std::setw(8) << std::hex << dut->rv32i_top->ram0->inner_ram[j] << std::endl;
         // }
 
         return i / 4;

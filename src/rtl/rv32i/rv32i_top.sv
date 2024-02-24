@@ -171,6 +171,7 @@ module rv32i_top import rv32i::*;
     .addr(masked_alu_result_ram),
     .wdata(rs2_data),
     .mem_op(mem_op),
+    .ram_mask(ram_mask),
     // -- Outputs
     .rdata(ram_out)
   );
