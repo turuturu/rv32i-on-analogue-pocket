@@ -6,7 +6,6 @@
 `include "rv32i/csr_registers.sv"
 `include "rv32i/decoder.sv"
 `include "rv32i/ram.sv"
-`include "rv32i/ram_mask.sv"
 `include "rv32i/reg_mask.sv"
 `include "rv32i/registers.sv"
 `include "rv32i/rom.sv"

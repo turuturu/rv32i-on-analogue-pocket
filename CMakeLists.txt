@@ -66,7 +66,7 @@ file(COPY ${RISCV_TESTS_DUMP} DESTINATION ${RISCV_TESTS_BIN_DIR})
 # Test
 ####################
 # targets
-set(targets decoder; alu; csr_registers; ram; registers; rom; rv32i_top; reg_mask; ram_mask;)
+set(targets decoder; alu; csr_registers; ram; registers; rom; rv32i_top; reg_mask;)
 
 # test bench
 foreach(target IN LISTS targets)
