@@ -352,7 +352,8 @@ module decoder import rv32i::*;
             //   csr_op = CSR_NOP;
             // end
             alu_op = ALU_NOP;
-            pc_input_type = PC_INPUT_CSR;
+            // pc_input_type = PC_INPUT_CSR;
+            pc_input_type = PC_INPUT_NEXT;
             alu_input1_type = ALU_INPUT1_NONE;
             alu_input2_type = ALU_INPUT2_NONE;
             wb_from = WB_NONE;
