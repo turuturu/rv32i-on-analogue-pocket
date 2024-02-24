@@ -12,13 +12,13 @@ module ram import rv32i::*;
     output logic [31:0] rdata
 );
 
-  logic [31:0] inner_ram [0:1023]/*verilator public*/; // 4KB
-  logic [9:0] inner_addr/*verilator public*/;
+  logic [31:0] inner_ram [0:4095]/*verilator public*/; // 4KB
+  logic [11:0] inner_addr/*verilator public*/;
   always_ff @(posedge clk) begin
     if (mem_op == MEM_STORE) begin
-      inner_ram[addr[11:2]] <= wdata;
+      inner_ram[addr[13:2]] <= wdata;
     end
-    inner_addr <= addr[11:2];
+    inner_addr <= addr[13:2];
   end
   assign rdata = inner_ram[inner_addr];
 endmodule

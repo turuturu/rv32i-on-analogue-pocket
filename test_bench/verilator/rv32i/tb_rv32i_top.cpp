@@ -10,6 +10,7 @@
 
 #include "Vrv32i_rv32i_top.h"
 #include "Vrv32i_rv32i_top_rom.h"
+#include "Vrv32i_rv32i_top_ram.h"
 #include "Vrv32i_rv32i_top_registers.h"
 #include "Vrv32i_rv32i_top_rv32i_top.h"
 #include <memory>
@@ -42,7 +43,11 @@ class Rv32iTopTest : public ::testing::Test {
             file.read(reinterpret_cast<char*>(&value), sizeof(value));
             // ファイルから正しく読み込めたか確認
             if (file.gcount() == sizeof(value)) {
-                dut->rv32i_top->rom0->inner_rom[i/4] = value;
+                if(i < 2000){
+                    dut->rv32i_top->rom0->inner_rom[i/4] = value;
+                }else{
+                    dut->rv32i_top->ram0->inner_ram[i/4] = value;
+                }
             }
             i += 4;
         }

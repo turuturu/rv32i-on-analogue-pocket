@@ -45,7 +45,7 @@ module rv32i_top import rv32i::*;
   logic [31:0] alu_input1; // alu input 1
   logic [31:0] alu_input2; // alu input 2
   logic [31:0] alu_result; // alu result
-  logic [31:0] masked_alu_result_reg; // masked alu result
+  logic [31:0] masked_reg_wb; // masked reg write back
   logic [31:0] masked_alu_result_ram; // masked alu result
   logic [31:0] csr_alu_result; // csr alu result
   logic [31:0] csr_alu_input; // csr alu input
@@ -72,7 +72,7 @@ module rv32i_top import rv32i::*;
                       alu_input2_type == ALU_INPUT2_RS2 ? rs2_data : 
                       32'b0;
 
-  assign reg_wb = wb_from == WB_ALU ? masked_alu_result_reg :
+  assign reg_wb = wb_from == WB_ALU ? alu_result :
                   wb_from == WB_PC ? pc + 4 :
                   wb_from == WB_MEM ? ram_out :
                   wb_from == WB_CSR ? csr_data :
@@ -90,10 +90,10 @@ module rv32i_top import rv32i::*;
 
   reg_mask reg_mask0 (
     // -- Inputs
-    .data(alu_result),
+    .data(reg_wb),
     .reg_mask_type(reg_mask),
     // -- Outputs
-    .masked_data(masked_alu_result_reg)
+    .masked_data(masked_reg_wb)
   );
 
   ram_mask ram_mask0 (
@@ -139,7 +139,7 @@ module rv32i_top import rv32i::*;
     .rs1_addr(rs1),
     .rs2_addr(rs2),
     .rd_addr(rd),
-    .rd_data(reg_wb),
+    .rd_data(masked_reg_wb),
     // -- Outputs
     .rs1_data(rs1_data),
     .rs2_data(rs2_data)
