@@ -1,27 +1,28 @@
 [*]
 [*] GTKWave Analyzer v3.3.103 (w)1999-2019 BSI
-[*] Sat Feb  3 05:54:59 2024
+[*] Sun Feb  4 02:34:05 2024
 [*]
 [dumpfile] "/home/ttsurumi/workspace/rv32i-on-analogue-pocket/vcd/rv32ui-p-add.vcd"
-[dumpfile_mtime] "Sat Feb  3 05:47:59 2024"
-[dumpfile_size] 871346
+[dumpfile_mtime] "Sat Feb  3 06:24:32 2024"
+[dumpfile_size] 339462
 [savefile] "/home/ttsurumi/workspace/rv32i-on-analogue-pocket/vcd/rv32ui-p-add.gtkw"
 [timestart] 0
-[size] 2484 1559
-[pos] -1 -1
-*0.232058 3 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[size] 1236 763
+[pos] 31 31
+*-2.767942 3 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] TOP.
 [treeopen] TOP.rv32i_top.
 [treeopen] TOP.rv32i_top.instr.
 [sst_width] 214
-[signals_width] 303
+[signals_width] 254
 [sst_expanded] 1
-[sst_vpaned_height] 489
+[sst_vpaned_height] 209
 @28
 TOP.clk
 TOP.reset_n
-@22
+@23
 TOP.rv32i_top.pc[31:0]
+@22
 TOP.rv32i_top.next_pc[31:0]
 @2028
 ^1 /home/ttsurumi/workspace/rv32i-on-analogue-pocket/vcd_defs/alu_op.txt
