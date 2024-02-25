@@ -51,16 +51,6 @@ class Rv32iTopTest : public ::testing::Test {
                     dut->rv32i_top->ram0->inner_ram[i+2] = (uint8_t)((value & 0xff0000) >> 16);
                     dut->rv32i_top->ram0->inner_ram[i+3] = (uint8_t)((value & 0xff000000) >> 24);
                 }
-                if(i == 0x2000 && filename == "rv32ui-p-lb.bin"){
-                  printf("%02x", dut->rv32i_top->ram0->inner_ram[i+0]);
-                  printf("%02x", dut->rv32i_top->ram0->inner_ram[i+1]);
-                  printf("%02x", dut->rv32i_top->ram0->inner_ram[i+2]);
-                  printf("%02x\n", dut->rv32i_top->ram0->inner_ram[i+3]);
-                //   std::cout << std::setfill('0') << std::setw(8) << std::hex << (uint8_t)dut->rv32i_top->ram0->inner_ram[i];
-                //   std::cout << std::setfill('0') << std::setw(8) << std::hex << (uint8_t)dut->rv32i_top->ram0->inner_ram[i+1];
-                //   std::cout << std::setfill('0') << std::setw(8) << std::hex << (uint8_t)dut->rv32i_top->ram0->inner_ram[i+2];
-                //   std::cout << std::setfill('0') << std::setw(8) << std::hex << (uint8_t)dut->rv32i_top->ram0->inner_ram[i+3] << std::endl;
-                }
             }
             i += 4;
         }
@@ -94,7 +84,6 @@ class Rv32iTopTest : public ::testing::Test {
         dut->eval();
         tfp->dump(cnt++);
         while (dut->rv32i_top->pc != 0x80000044) {
-        // for(int i = 0; i < len; i++){
             dut->clk = 1;
             dut->eval();
             tfp->dump(cnt++);

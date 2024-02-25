@@ -22,11 +22,11 @@ class RamTest : public ::testing::Test {
 namespace {
 
 TEST_F(RamTest, READ_WRITE) {
-    uint32_t vals[] = {
-        0x00000001,
-        0x00000002,
-        0x00000003,
-        0x00000004,
+    uint8_t vals[] = {
+        1,
+        2,
+        3,
+        4,
     };
     int length = sizeof(vals);
     int i = 0;
@@ -41,20 +41,22 @@ TEST_F(RamTest, READ_WRITE) {
         dut->clk = 0;
         dut->eval();
         dut->clk = 1;
-        dut->addr = i << 2; // addr is aligned to 4 bytes
+        dut->addr = i; // addr is aligned to 4 bytes
         dut->mem_op = Vrv32i_ram_rv32i::MEM_LOAD;
+        dut->ram_mask = Vrv32i_ram_rv32i::RAM_MASK_B;
         dut->eval();
         ASSERT_EQ(vals[i], dut->rdata);
         i++;
     }
     // write test
-    for(i = 0; i < 100; i++){
+    for(i = 0; i < length; i++){
         dut->clk = 0;
         dut->eval();
         dut->clk = 1;
-        dut->addr = i << 2; // addr is aligned to 4 bytes
+        dut->addr = i; // addr is aligned to 4 bytes
         dut->wdata = i * i;
         dut->mem_op = Vrv32i_ram_rv32i::MEM_STORE;
+        dut->ram_mask = Vrv32i_ram_rv32i::RAM_MASK_B;
         dut->eval();
         ASSERT_EQ(i * i, dut->ram->inner_ram[i]);
         ASSERT_EQ(i, dut->ram->inner_addr);

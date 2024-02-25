@@ -41,7 +41,9 @@ module ram import rv32i::*;
     end
   end
   assign inner_addr = addr[13:0];
-  assign rdata = {inner_ram[inner_addr+3],inner_ram[inner_addr+2],inner_ram[inner_addr+1],inner_ram[inner_addr]};
+  assign rdata = ram_mask == RAM_MASK_B ? {24'b0, inner_ram[inner_addr]} : 
+                 ram_mask == RAM_MASK_H ? {16'b0, inner_ram[inner_addr+1],inner_ram[inner_addr]} : 
+                 {inner_ram[inner_addr+3],inner_ram[inner_addr+2],inner_ram[inner_addr+1],inner_ram[inner_addr]}; //ram_mask == RAM_MASK_W
 endmodule
 
 `endif
