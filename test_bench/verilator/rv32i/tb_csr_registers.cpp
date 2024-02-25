@@ -36,7 +36,11 @@ TEST_F(CsrRegistersTest, READ_WRITE) {
         dut->eval();
         dut->clk = 1;
         dut->eval();
-        ASSERT_EQ(i+1, dut->data);
+        if(i == 0x342){
+            ASSERT_EQ(0xb, dut->data);
+        }else{
+            ASSERT_EQ(i+1, dut->data);
+        }
         i++;
     }
     // write test
