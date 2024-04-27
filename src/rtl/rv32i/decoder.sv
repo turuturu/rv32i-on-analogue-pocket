@@ -5,7 +5,7 @@
 
 module decoder import rv32i::*;
 (
-  input  rv32i_inst_u instr,                     // instruction
+  input  logic[31:0] instr,                     // instruction
   output logic [4:0] rs1,                        // source register 1
   output logic [4:0] rs2,                        // source register 2
   output logic [4:0] rd,                         // destination register
@@ -23,17 +23,35 @@ module decoder import rv32i::*;
 );
   opcode_e opcode;
   optype_e optype/*verilator public*/;
-
+  logic [2:0] funct3;
+  logic [6:0] funct7;
+  logic [31:0] imm_i;
+  logic [31:0] unsigned_imm_i;
+  logic [31:0] imm_s;
+  logic [31:0] imm_b;
+  logic [31:0] imm_u;
+  logic [31:0] imm_j;
+  
   assign opcode = opcode_e'(instr[6:0]);
+  assign rs1 = instr[19:15];
+  assign rs2 = instr[24:20];
+  assign rd = instr[11:7];
+  assign funct3 = instr[14:12];
+  assign funct7 = instr[31:25];
+  assign imm_i = {{20{instr[31]}}, instr[31:20]};
+  assign unsigned_imm_i = {20'b0, instr[31:20]};
+
+  assign imm_s = {{20{instr[31]}}, instr[31:25], instr[11:7]};
+  assign imm_b = {{19{instr[31]}}, instr[31], instr[7], instr[30:25], instr[11:8], 1'b0};
+        
+  assign imm_u = {instr[31:12], 12'b0};
+  assign imm_j =  {{11{instr[31]}}, instr[31], instr[19:12], instr[20], instr[30:21], 1'b0};
 
   always_comb begin
     unique case (opcode)
       OP_LUI: begin
         optype = UTYPE;
         alu_op = ALU_ADD;
-        rs1 = 5'b0;
-        rs2 = 5'b0;
-        rd = instr.type_u.rd;
         pc_input_type = PC_INPUT_NEXT;
         alu_input1_type = ALU_INPUT1_IMM;
         alu_input2_type = ALU_INPUT2_NONE;
@@ -42,15 +60,12 @@ module decoder import rv32i::*;
         ram_mask = RAM_MASK_W;
         r_we = REG_WE;
         mem_op = MEM_LOAD;
-        imm = {instr.type_u.imm, 12'b0};
+        imm = imm_u;
         csr_we = REG_WD;
       end
       OP_AUIPC: begin
         optype = UTYPE;
         alu_op = ALU_ADD;
-        rs1 = 5'b0;
-        rs2 = 5'b0;
-        rd = instr.type_u.rd;
         pc_input_type = PC_INPUT_NEXT;
         alu_input1_type = ALU_INPUT1_PC;
         alu_input2_type = ALU_INPUT2_IMM;
@@ -59,15 +74,12 @@ module decoder import rv32i::*;
         ram_mask = RAM_MASK_W;
         r_we = REG_WE;
         mem_op = MEM_LOAD;
-        imm = {instr.type_u.imm, 12'b0};
+        imm = imm_u;
         csr_we = REG_WD;
       end
       OP_JAL: begin
         optype = JTYPE;
         alu_op = ALU_JAL;
-        rs1 = 5'b0;
-        rs2 = 5'b0;
-        rd = instr.type_j.rd;
         pc_input_type = PC_INPUT_ALU;
         alu_input1_type = ALU_INPUT1_PC;
         alu_input2_type = ALU_INPUT2_IMM;
@@ -76,15 +88,12 @@ module decoder import rv32i::*;
         ram_mask = RAM_MASK_W;
         r_we = REG_WE;
         mem_op = MEM_LOAD;
-        imm = {{11{instr.type_j.imm[19]}}, instr.type_j.imm[19], instr.type_j.imm[7:0], instr.type_j.imm[8], instr.type_j.imm[18:9], 1'b0};
+        imm = imm_j;
         csr_we = REG_WD;
       end
       OP_JALR: begin
         optype = ITYPE;
         alu_op = ALU_JALR;
-        rs1 = instr.type_i.rs1;
-        rs2 = 5'b0;
-        rd = instr.type_i.rd;
         pc_input_type = PC_INPUT_ALU;
         alu_input1_type = ALU_INPUT1_RS1;
         alu_input2_type = ALU_INPUT2_IMM;
@@ -93,14 +102,11 @@ module decoder import rv32i::*;
         ram_mask = RAM_MASK_W;
         r_we = REG_WE;
         mem_op = MEM_LOAD;
-        imm = {{20{instr.type_i.imm[11]}}, instr.type_i.imm};
+        imm = imm_i;
         csr_we = REG_WD;
       end
       OP_BRANCH: begin
         optype = BTYPE;
-        rs1 = instr.type_b.rs1;
-        rs2 = instr.type_b.rs2;
-        rd = 5'b0;
         pc_input_type = PC_INPUT_ALU;
         alu_input1_type = ALU_INPUT1_RS1;
         alu_input2_type = ALU_INPUT2_RS2;
@@ -109,9 +115,9 @@ module decoder import rv32i::*;
         ram_mask = RAM_MASK_W;
         r_we = REG_WD;
         mem_op = MEM_LOAD;
-        imm = {{19{instr.type_b.imm1[6]}}, instr.type_b.imm1[6], instr.type_b.imm2[0], instr.type_b.imm1[5:0], instr.type_b.imm2[4:1], 1'b0};
+        imm = imm_b;
         csr_we = REG_WD;
-        case (instr.type_b.funct3)
+        case (funct3)
           3'b000: begin // BEQ
             alu_op = ALU_BEQ;
           end
@@ -138,9 +144,6 @@ module decoder import rv32i::*;
       end
       OP_LOAD: begin
         optype = ITYPE;
-        rs1 = instr.type_i.rs1;
-        rs2 = 5'b0;
-        rd = instr.type_i.rd;
         pc_input_type = PC_INPUT_NEXT;
         alu_input1_type = ALU_INPUT1_RS1;
         alu_input2_type = ALU_INPUT2_IMM;
@@ -148,9 +151,9 @@ module decoder import rv32i::*;
         ram_mask = RAM_MASK_W;
         r_we = REG_WE;
         mem_op = MEM_LOAD;
-        imm = {{20{instr.type_i.imm[11]}}, instr.type_i.imm};
+        imm = imm_i;
         csr_we = REG_WD;
-        case (instr.type_i.funct3)
+        case (funct3)
           3'b000: begin // LB
             alu_op = ALU_ADD;
             reg_mask = REG_MASK_BX;
@@ -180,9 +183,6 @@ module decoder import rv32i::*;
       end
       OP_STORE: begin
         optype = STYPE;
-        rs1 = instr.type_s.rs1;
-        rs2 = instr.type_s.rs2;
-        rd = 5'b0;
         pc_input_type = PC_INPUT_NEXT;
         alu_input1_type = ALU_INPUT1_RS1;
         alu_input2_type = ALU_INPUT2_IMM;
@@ -190,9 +190,9 @@ module decoder import rv32i::*;
         reg_mask = REG_MASK_W;
         r_we = REG_WD;
         mem_op = MEM_STORE;
-        imm = {{20{instr.type_s.imm1[6]}}, instr.type_s.imm1[6:0], instr.type_s.imm2[4:0]};
+        imm = imm_s;
         csr_we = REG_WD;
-        case (instr.type_s.funct3)
+        case (funct3)
           3'b000: begin // SB
             alu_op = ALU_ADD;
             ram_mask = RAM_MASK_B;
@@ -214,9 +214,6 @@ module decoder import rv32i::*;
       end
       OP_OPIMM: begin
         optype = ITYPE;
-        rs1 = instr.type_i.rs1;
-        rs2 = 5'b0;
-        rd = instr.type_i.rd;
         pc_input_type = PC_INPUT_NEXT;
         alu_input1_type = ALU_INPUT1_RS1;
         alu_input2_type = ALU_INPUT2_IMM;
@@ -225,9 +222,9 @@ module decoder import rv32i::*;
         ram_mask = RAM_MASK_W;
         r_we = REG_WE;
         mem_op = MEM_LOAD;
-        imm = {{20{instr.type_i.imm[11]}}, instr.type_i.imm};
+        imm = imm_i;
         csr_we = REG_WD;
-        unique case (instr.type_i.funct3)
+        unique case (funct3)
           3'b000: begin // ADDI
             alu_op = ALU_ADD;
           end
@@ -250,7 +247,7 @@ module decoder import rv32i::*;
             alu_op = ALU_SLL;
           end
           3'b101: begin // SRLI, SRAI
-            if (instr.type_i.imm[11:5] == 7'b0000000) begin
+            if (imm_i[11:5] == 7'b0000000) begin
               alu_op = ALU_SRL;
             end else begin
               alu_op = ALU_SRA;
@@ -265,9 +262,6 @@ module decoder import rv32i::*;
       end
       OP_OP: begin
         optype = RTYPE;
-        rs1 = instr.type_r.rs1;
-        rs2 = instr.type_r.rs2;
-        rd = instr.type_r.rd;
         pc_input_type = PC_INPUT_NEXT;
         alu_input1_type = ALU_INPUT1_RS1;
         alu_input2_type = ALU_INPUT2_RS2;
@@ -278,9 +272,9 @@ module decoder import rv32i::*;
         mem_op = MEM_LOAD;
         imm = 32'b0;
         csr_we = REG_WD;
-        unique case (instr.type_r.funct3)
+        unique case (funct3)
           3'b000: begin // ADD, SUB
-            if (instr.type_r.funct7 == 7'b0000000) begin
+            if (funct7 == 7'b0000000) begin
               alu_op = ALU_ADD;
             end else begin
               alu_op = ALU_SUB;
@@ -299,7 +293,7 @@ module decoder import rv32i::*;
             alu_op = ALU_XOR;
           end
           3'b101: begin // SRL, SRA
-            if (instr.type_r.funct7 == 7'b0000000) begin
+            if (funct7 == 7'b0000000) begin
               alu_op = ALU_SRL;
             end else begin
               alu_op = ALU_SRA;
@@ -316,9 +310,6 @@ module decoder import rv32i::*;
       OP_FENCE: begin
         optype = ITYPE;
         alu_op = ALU_NOP;
-        rs1 = 5'b0;
-        rs2 = 5'b0;
-        rd = 5'b0;
         pc_input_type = PC_INPUT_NEXT;
         alu_input1_type = ALU_INPUT1_NONE;
         alu_input2_type = ALU_INPUT2_NONE;
@@ -329,7 +320,7 @@ module decoder import rv32i::*;
         mem_op = MEM_LOAD;
         imm = 32'b0;
         csr_we = REG_WD;
-        // if (instr.type_i.funct3 == 3'b000) begin // FENCE
+        // if (type_i.funct3 == 3'b000) begin // FENCE
         //   csr_op = CSR_NOP;
         // end else begin // FENCE.I
         //   csr_op = CSR_NOP;
@@ -337,21 +328,18 @@ module decoder import rv32i::*;
       end
       OP_SYSTEM: begin
         optype = ITYPE;
-        rs1 = instr.type_i.rs1;
-        rs2 = 5'b0;
-        rd = instr.type_i.rd;
         reg_mask = REG_MASK_W;
         ram_mask = RAM_MASK_W;
         mem_op = MEM_LOAD;
-        imm = {20'b0, instr.type_i.imm};
-        unique case (instr.type_i.funct3)
+        imm = unsigned_imm_i; // {20'b0, type_i.imm};
+        unique case (funct3)
           3'b000: begin
-            // if (instr.type_i.imm == 12'b000000000000) begin // ECALL
+            // if (type_i.imm == 12'b000000000000) begin // ECALL
             //   csr_op = CSR_NOP;
             // end else begin // EBREAK
             //   csr_op = CSR_NOP;
             // end
-            if (instr.type_i.imm == 12'b000000000000) begin // ECALL
+            if (imm_i[11:0] == 12'b000000000000) begin // ECALL
               pc_input_type = PC_INPUT_CSR;
               imm = 32'h305;
             end else begin // EBREAK
@@ -359,8 +347,6 @@ module decoder import rv32i::*;
               imm = 32'h0;
             end
             alu_op = ALU_NOP;
-            // pc_input_type = PC_INPUT_CSR;
-            // pc_input_type = PC_INPUT_NEXT;
             alu_input1_type = ALU_INPUT1_NONE;
             alu_input2_type = ALU_INPUT2_NONE;
             wb_from = WB_NONE;
@@ -436,9 +422,6 @@ module decoder import rv32i::*;
       default: begin
         optype = ITYPE;
         alu_op = ALU_NOP;
-        rs1 = 5'b0;
-        rs2 = 5'b0;
-        rd = 5'b0;
         pc_input_type = PC_INPUT_NEXT;
         alu_input1_type = ALU_INPUT1_NONE;
         alu_input2_type = ALU_INPUT2_NONE;

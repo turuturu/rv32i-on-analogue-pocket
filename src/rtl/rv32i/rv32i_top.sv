@@ -18,7 +18,7 @@ module rv32i_top import rv32i::*;
   logic [31:0] pc;
   logic [31:0] next_pc;
 
-  rv32i_inst_u instr;                      // instruction
+  logic [31:0] instr;                      // instruction
   logic [4:0] rs1;                         // source register 1
   logic [4:0] rs2;                         // source register 2
   logic [4:0] rd;                          // destination register
