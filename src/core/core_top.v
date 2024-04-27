@@ -5,6 +5,7 @@
 //
 
 `default_nettype none
+`include "rtl/rv32i/rv32i_top.sv"
 
 module core_top (
 
@@ -372,6 +373,11 @@ end
     wire            datatable_wren;
     wire    [31:0]  datatable_data;
     wire    [31:0]  datatable_q;
+
+rv32i_top rv32i (
+    .clk                ( clk_74a ),
+    .reset_n            ( reset_n )
+);
 
 core_bridge_cmd icb (
 
