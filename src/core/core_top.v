@@ -376,7 +376,8 @@ end
 
 rv32i_top rv32i (
     .clk                ( clk_74a ),
-    .reset_n            ( reset_n )
+    .reset_n            ( reset_n ),
+    .stall              ( 1'b0 ),
 );
 
 core_bridge_cmd icb (

@@ -13,6 +13,7 @@
 module rv32i_top import rv32i::*;
 (
     input logic clk,
+    input logic stall,
     input logic reset_n
 );
   logic [31:0] pc;
@@ -52,11 +53,11 @@ module rv32i_top import rv32i::*;
   logic [31:0] ram_out; // ram output
   logic [31:0] reg_wb; // register write back
 
-  assign next_pc = reset_n == 0 ? pc:
+  assign next_pc = stall ? pc:
+                   reset_n == 0 ? pc:
                    pc_input_type == PC_INPUT_CSR ? csr_data :
                    pc_input_type == PC_INPUT_NEXT ? pc + 4 :
-                   pc_input_type == PC_INPUT_ALU ? 
-                   (
+                   pc_input_type == PC_INPUT_ALU ? (
                      branch_type == BRANCH_RELATIVE ? pc + imm :
                      branch_type == BRANCH_ABSOLUTE ? alu_result :
                      pc + 4 // BRANCH_NONE
