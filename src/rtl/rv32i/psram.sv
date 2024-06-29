@@ -1,6 +1,8 @@
 `ifndef __RV32I_PSRAM_SV
 `define __RV32I_PSRAM_SV
 
+`include "rv32i/rv32i.sv" 
+
 // MIT License
 
 // Copyright (c) 2022 Adam Gastineau
@@ -33,7 +35,7 @@ endfunction
 `define CEIL(x) (($rtoi(x) > x) ? $rtoi(x) : $rtoi(x) + 1)
 `define MAX(x, y) ((x > y) ? x : y)
 
-module psram  import rv32i::*;
+module psram import rv32i::*;
 #(
     parameter CLOCK_SPEED = 133.12,  // Clock speed in megahertz
 

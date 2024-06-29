@@ -221,7 +221,7 @@ module rv32i_top import rv32i::*;
   logic psram_busy;
   logic [15:0] psram_out; // psram output
 
-  psram psram (
+  psram psram0 (
       .clk(clk),
 
       .bank_sel(0),
