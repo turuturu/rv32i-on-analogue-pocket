@@ -5,8 +5,8 @@
 
 module rom import rv32i::*;
 #(
-  // parameter ADDR_LENGTH = 12, // 16KB
-  parameter ADDR_LENGTH = 8, // 1KB
+  parameter ADDR_LENGTH = 10, // 4KB
+  // parameter ADDR_LENGTH = 8, // 1KB
   parameter MEM_SIZE = 2**ADDR_LENGTH
 )
 (
@@ -15,7 +15,8 @@ module rom import rv32i::*;
     output logic [31:0] data
 );
 
-  logic [31:0] inner_rom [0:MEM_SIZE-1]/*verilator public*/; // 16KB
+  // logic [31:0] inner_rom [0:MEM_SIZE-1]/*verilator public*/; // 16KB
+  (* ramstyle = "MLAB" *)logic [31:0] inner_rom [0:MEM_SIZE-1]/*verilator public*/;
   // logic [31:0] inner_rom [0:255]/*verilator public*/; // 1KB
   logic [ADDR_LENGTH-1:0] inner_addr;
 

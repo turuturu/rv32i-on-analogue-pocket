@@ -17,7 +17,7 @@ module ram import rv32i::*;
     output logic [31:0] rdata
 );
 
-  logic [7:0] inner_ram [0:MEM_SIZE-1]/*verilator public*/;
+  (* ramstyle = "M10K" *)logic [7:0] inner_ram [0:MEM_SIZE-1]/*verilator public*/;
   // logic [7:0] inner_ram [0:255]/*verilator public*/; // 1KB
   logic [ADDR_LENGTH-1:0] inner_addr/*verilator public*/;
   always_ff @(posedge clk) begin
