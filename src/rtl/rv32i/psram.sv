@@ -28,11 +28,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 function integer rtoi(input integer x);
-  // return x;
-  return $rtoi(x);
+  return x;
 endfunction
 
-`define CEIL(x) (($rtoi(x) > x) ? $rtoi(x) : $rtoi(x) + 1)
+`define CEIL(x) ((rtoi(integer'(x)) > integer'(x)) ? rtoi(integer'(x)) : rtoi(integer'(x)) + 1)
 `define MAX(x, y) ((x > y) ? x : y)
 
 module psram import rv32i::*;
