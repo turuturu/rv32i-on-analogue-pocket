@@ -236,8 +236,9 @@ module psram import rv32i::*;
     $info("");
     $info("  Total read time: %d cycles", TOTAL_READ_CYCLE_COUNT);
   end
-
-  reg [31:0] state = STATE_NONE;
+  
+  
+  reg [31:0] state/*verilator public*/ = STATE_NONE;
 
   // If 1, route cram_data reg to cram_dq
   reg data_out_en = 0;
