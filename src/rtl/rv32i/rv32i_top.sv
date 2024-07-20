@@ -101,19 +101,30 @@ module rv32i_top import rv32i::*;
 
   logic [31:0] ram_out; // ram output
   logic [31:0] reg_wb; // register write back
+  // for pipe line 1
+  logic [31:0] p1_pc; // pipe line 1 pc
+  logic [31:0] p1_instr; // pipe line 1 instruction
+  logic p1_valid = 0; // pipe line 1 valid
+
+  logic w_miss = (
+      pc_input_type == PC_INPUT_ALU
+    ) && (
+      branch_type != BRANCH_NONE
+    ) && p1_valid;
 
   assign next_pc = stall ? pc:
                    reset_n == 0 ? pc:
+                   w_miss ? pc + 4:
                    pc_input_type == PC_INPUT_CSR ? csr_data :
                    pc_input_type == PC_INPUT_NEXT ? pc + 4 :
                    pc_input_type == PC_INPUT_ALU ? (
-                     branch_type == BRANCH_RELATIVE ? pc + imm :
+                     branch_type == BRANCH_RELATIVE ? p1_pc + imm :
                      branch_type == BRANCH_ABSOLUTE ? alu_result :
                      pc + 4 // BRANCH_NONE
                    ) : pc;
   assign alu_input1 = alu_input1_type == ALU_INPUT1_IMM ? imm :
                       alu_input1_type == ALU_INPUT1_RS1 ? rs1_data : 
-                      alu_input1_type == ALU_INPUT1_PC ? pc : 
+                      alu_input1_type == ALU_INPUT1_PC ? p1_pc : 
                       alu_input1_type == ALU_INPUT1_CSR ? csr_data : 
                       32'b0;
   assign alu_input2 = alu_input2_type == ALU_INPUT2_IMM ? imm :
@@ -145,6 +156,7 @@ module rv32i_top import rv32i::*;
     .masked_data(masked_reg_wb)
   );
 
+  // IF Stage
   rom rom0(
     // -- Inputs
     .clk,
@@ -152,10 +164,16 @@ module rv32i_top import rv32i::*;
     // -- Outputs
     .data(instr)
   );
-  
+  always_ff @(posedge clk) begin
+    p1_pc <= next_pc;
+    p1_instr <= instr;
+    p1_valid <= !w_miss;
+  end
+
+  // ID Stage  
   decoder decoder0 (
     // -- Inputs
-    .instr,
+    .instr(p1_instr),
     // -- Outputs
     .rs1,
     .rs2,
@@ -172,11 +190,11 @@ module rv32i_top import rv32i::*;
     .mem_op,
     .csr_we
   );
-
+  
   registers registers0 (
     // -- Inputs
     .clk,
-    .we(r_we),
+    .we(r_we && p1_valid),
     .rs1_addr(rs1),
     .rs2_addr(rs2),
     .rd_addr(rd),
@@ -189,13 +207,15 @@ module rv32i_top import rv32i::*;
   csr_registers csr_registers0 (
     // -- Inputs
     .clk,
-    .we(csr_we),
+    .we(csr_we && p1_valid),
     .csr_addr(csr_addr),
     .wdata(alu_result),
     // -- Outputs
     .data(csr_data)
   );
 
+
+  // EX Stage
   alu alu0 (
     // -- Inputs
     .data1(alu_input1),
@@ -206,12 +226,13 @@ module rv32i_top import rv32i::*;
     .branch_type(branch_type)
   );
 
+  // MA Stage
   ram ram0 (
     // -- Inputs
     .clk,
     .addr(alu_result),
     .wdata(rs2_data),
-    .mem_op(mem_op),
+    .mem_op(p1_valid ? mem_op : MEM_LOAD),
     .ram_mask(ram_mask),
     // -- Outputs
     .rdata(ram_out)
