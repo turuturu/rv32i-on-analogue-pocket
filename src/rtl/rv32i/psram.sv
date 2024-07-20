@@ -218,22 +218,22 @@ module psram import rv32i::*;
   localparam STATE_READ_DATA_RECEIVED = READ_INITIAL_COUNT + TOTAL_READ_CYCLE_COUNT;
 
   initial begin
-    $info("Instantiated PSRAM with the following settings:");
-    $info("  Clock speed: %f MHz with period %f ns", CLOCK_SPEED, PERIOD);
-    $info("  Writes:");
-    $info("    STATE_WRITE_ADV_END: %d", STATE_WRITE_ADV_END);
-    $info("    STATE_WRITE_ADDR_LATCH_END: %d", STATE_WRITE_ADDR_LATCH_END);
-    $info("    STATE_WRITE_DATA_START: %d", STATE_WRITE_DATA_START);
-    $info("    STATE_WRITE_DATA_END: %d", STATE_WRITE_DATA_END);
-    $info("");
-    $info("  Total write time: %d cycles", TOTAL_WRITE_CYCLE_COUNT);
-    $info("  Reads:");
-    $info("    STATE_READ_ADV_END: %d", STATE_READ_ADV_END);
-    $info("    STATE_READ_ADDR_LATCH_END: %d", STATE_READ_ADDR_LATCH_END);
-    $info("    STATE_READ_DATA_ENABLE: %d", STATE_READ_DATA_ENABLE);
-    $info("    STATE_READ_DATA_RECEIVED: %d", STATE_READ_DATA_RECEIVED);
-    $info("");
-    $info("  Total read time: %d cycles", TOTAL_READ_CYCLE_COUNT);
+    // $info("Instantiated PSRAM with the following settings:");
+    // $info("  Clock speed: %f MHz with period %f ns", CLOCK_SPEED, PERIOD);
+    // $info("  Writes:");
+    // $info("    STATE_WRITE_ADV_END: %d", STATE_WRITE_ADV_END);
+    // $info("    STATE_WRITE_ADDR_LATCH_END: %d", STATE_WRITE_ADDR_LATCH_END);
+    // $info("    STATE_WRITE_DATA_START: %d", STATE_WRITE_DATA_START);
+    // $info("    STATE_WRITE_DATA_END: %d", STATE_WRITE_DATA_END);
+    // $info("");
+    // $info("  Total write time: %d cycles", TOTAL_WRITE_CYCLE_COUNT);
+    // $info("  Reads:");
+    // $info("    STATE_READ_ADV_END: %d", STATE_READ_ADV_END);
+    // $info("    STATE_READ_ADDR_LATCH_END: %d", STATE_READ_ADDR_LATCH_END);
+    // $info("    STATE_READ_DATA_ENABLE: %d", STATE_READ_DATA_ENABLE);
+    // $info("    STATE_READ_DATA_RECEIVED: %d", STATE_READ_DATA_RECEIVED);
+    // $info("");
+    // $info("  Total read time: %d cycles", TOTAL_READ_CYCLE_COUNT);
   end
   
   
