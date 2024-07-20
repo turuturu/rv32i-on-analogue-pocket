@@ -106,15 +106,18 @@ module rv32i_top import rv32i::*;
   logic [31:0] p1_instr; // pipe line 1 instruction
   logic p1_valid = 0; // pipe line 1 valid
 
-  logic w_miss = (
-      pc_input_type == PC_INPUT_ALU
-    ) && (
-      branch_type != BRANCH_NONE
-    ) && p1_valid;
+  logic w_miss;
+  assign w_miss = (
+    (
+      (pc_input_type == PC_INPUT_ALU && branch_type != BRANCH_NONE) || 
+      pc_input_type == PC_INPUT_CSR
+    ) && 
+    p1_valid
+  );
 
   assign next_pc = stall ? pc:
                    reset_n == 0 ? pc:
-                   w_miss ? pc + 4:
+                   !w_miss ? pc + 4:
                    pc_input_type == PC_INPUT_CSR ? csr_data :
                    pc_input_type == PC_INPUT_NEXT ? pc + 4 :
                    pc_input_type == PC_INPUT_ALU ? (
@@ -165,7 +168,7 @@ module rv32i_top import rv32i::*;
     .data(instr)
   );
   always_ff @(posedge clk) begin
-    p1_pc <= next_pc;
+    p1_pc <= pc;
     p1_instr <= instr;
     p1_valid <= !w_miss;
   end
