@@ -46,10 +46,10 @@ class Rv32iTopTest : public ::testing::Test {
                 if(i < 0x2000){
                     dut->rv32i_top->rom0->inner_rom[i/4] = value;
                 }else{
-                    dut->rv32i_top->ram0->inner_ram[i+0] = (uint8_t)(value & 0xff);
-                    dut->rv32i_top->ram0->inner_ram[i+1] = (uint8_t)((value & 0xff00) >> 8);
-                    dut->rv32i_top->ram0->inner_ram[i+2] = (uint8_t)((value & 0xff0000) >> 16);
-                    dut->rv32i_top->ram0->inner_ram[i+3] = (uint8_t)((value & 0xff000000) >> 24);
+                    dut->rv32i_top->ram0->inner_ram0[i] = (uint8_t)(value & 0xff);
+                    dut->rv32i_top->ram0->inner_ram1[i] = (uint8_t)((value & 0xff00) >> 8);
+                    dut->rv32i_top->ram0->inner_ram2[i] = (uint8_t)((value & 0xff0000) >> 16);
+                    dut->rv32i_top->ram0->inner_ram3[i] = (uint8_t)((value & 0xff000000) >> 24);
                 }
             }
             i += 4;
