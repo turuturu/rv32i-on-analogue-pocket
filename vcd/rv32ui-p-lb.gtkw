@@ -1,0 +1,36 @@
+[*]
+[*] GTKWave Analyzer v3.3.103 (w)1999-2019 BSI
+[*] Sat Jul 20 08:22:31 2024
+[*]
+[dumpfile] "/home/ttsurumi/workspace/rv32i-on-analogue-pocket/vcd/rv32ui-p-lb.vcd"
+[dumpfile_mtime] "Sat Jul 20 06:27:18 2024"
+[dumpfile_size] 158478
+[savefile] "/home/ttsurumi/workspace/rv32i-on-analogue-pocket/vcd/rv32ui-p-lb.gtkw"
+[timestart] 95
+[size] 2475 564
+[pos] -1086 -243
+*-2.138053 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] TOP.
+[treeopen] TOP.rv32i_top.
+[sst_width] 214
+[signals_width] 158
+[sst_expanded] 1
+[sst_vpaned_height] 139
+@28
+TOP.clk
+@22
+TOP.rv32i_top.pc[31:0]
+TOP.rv32i_top.next_pc[31:0]
+TOP.rv32i_top.alu_op[4:0]
+@2028
+^1 /home/ttsurumi/workspace/rv32i-on-analogue-pocket/vcd_defs/opcode.txt
+TOP.rv32i_top.decoder0.opcode[6:0]
+^2 /home/ttsurumi/workspace/rv32i-on-analogue-pocket/vcd_defs/optype.txt
+TOP.rv32i_top.decoder0.optype[2:0]
+@22
+TOP.rv32i_top.alu_result[31:0]
+@2028
+^3 /home/ttsurumi/workspace/rv32i-on-analogue-pocket/vcd_defs/branch_type.txt
+TOP.rv32i_top.branch_type[1:0]
+[pattern_trace] 1
+[pattern_trace] 0
