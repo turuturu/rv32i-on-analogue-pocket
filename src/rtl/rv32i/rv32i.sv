@@ -64,8 +64,8 @@ typedef enum logic [1:0] {
 } branch_type_e /*verilator public*/;
 
 typedef enum logic {
-  REG_WE,
-  REG_WD
+  REG_WD,
+  REG_WE
 } reg_we_e /*verilator public*/;
 
 typedef enum logic [2:0] {

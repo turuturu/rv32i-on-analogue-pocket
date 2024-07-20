@@ -119,12 +119,12 @@ module rv32i_top import rv32i::*;
                    reset_n == 0 ? pc:
                    !w_miss ? pc + 4:
                    pc_input_type == PC_INPUT_CSR ? csr_data :
-                   pc_input_type == PC_INPUT_NEXT ? pc + 4 :
+                   pc_input_type == PC_INPUT_NEXT ? p1_pc + 4 :
                    pc_input_type == PC_INPUT_ALU ? (
                      branch_type == BRANCH_RELATIVE ? p1_pc + imm :
                      branch_type == BRANCH_ABSOLUTE ? alu_result :
-                     pc + 4 // BRANCH_NONE
-                   ) : pc;
+                     p1_pc + 4 // BRANCH_NONE
+                   ) : p1_pc;
   assign alu_input1 = alu_input1_type == ALU_INPUT1_IMM ? imm :
                       alu_input1_type == ALU_INPUT1_RS1 ? rs1_data : 
                       alu_input1_type == ALU_INPUT1_PC ? p1_pc : 
@@ -136,7 +136,7 @@ module rv32i_top import rv32i::*;
                       32'b0;
 
   assign reg_wb = wb_from == WB_ALU ? alu_result :
-                  wb_from == WB_PC ? pc + 4 :
+                  wb_from == WB_PC ? p1_pc + 4 :
                   wb_from == WB_MEM ? ram_out :
                   wb_from == WB_CSR ? csr_data :
                   32'b0;
@@ -197,7 +197,7 @@ module rv32i_top import rv32i::*;
   registers registers0 (
     // -- Inputs
     .clk,
-    .we(r_we && p1_valid),
+    .we((r_we & p1_valid ) ? REG_WE : REG_WD),
     .rs1_addr(rs1),
     .rs2_addr(rs2),
     .rd_addr(rd),
@@ -210,7 +210,7 @@ module rv32i_top import rv32i::*;
   csr_registers csr_registers0 (
     // -- Inputs
     .clk,
-    .we(csr_we && p1_valid),
+    .we((csr_we & p1_valid) ? REG_WE : REG_WD),
     .csr_addr(csr_addr),
     .wdata(alu_result),
     // -- Outputs
