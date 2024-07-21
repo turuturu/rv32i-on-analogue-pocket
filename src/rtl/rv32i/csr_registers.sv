@@ -8,6 +8,7 @@ module csr_registers import rv32i::*;
     input logic clk,
     input reg_we_e we,
     input logic [11:0] csr_addr,
+    input logic [11:0] csr_waddr,
     input logic [31:0] wdata,
     output logic [31:0] data
 );
@@ -15,7 +16,7 @@ module csr_registers import rv32i::*;
 
   always_ff @(posedge clk) begin
     if (we == REG_WE) begin
-      regs[csr_addr] <= wdata;
+      regs[csr_waddr] <= wdata;
     end
   end
 

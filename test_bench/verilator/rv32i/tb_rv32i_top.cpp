@@ -75,19 +75,24 @@ class Rv32iTopTest : public ::testing::Test {
 
         int len = load_binary_to_rom(bin_name.c_str());
         int cnt = 0;
-        dut->clk = 0;
-        dut->reset_n = 0;
-        dut->eval();
         dut->clk = 1;
         dut->eval();
+        tfp->dump(cnt++);
         dut->clk = 0;
         dut->eval();
         tfp->dump(cnt++);
-        while (dut->rv32i_top->pc != 0x80000044) {
+        dut->clk = 1;
+        dut->eval();
+        tfp->dump(cnt++);
+        dut->clk = 0;
+        dut->reset_n = 0;
+        dut->eval();
+        tfp->dump(cnt++);
+        dut->reset_n = 1;
+        while (dut->rv32i_top->pc != 0x80000044 && cnt < 2000) {
             dut->clk = 1;
             dut->eval();
             tfp->dump(cnt++);
-            dut->reset_n = 1;
             dut->clk = 0;
             dut->eval();
             tfp->dump(cnt++);

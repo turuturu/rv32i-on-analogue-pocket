@@ -1,21 +1,21 @@
 [*]
 [*] GTKWave Analyzer v3.3.103 (w)1999-2019 BSI
-[*] Sat Jul 20 03:40:14 2024
+[*] Sun Jul 21 05:34:39 2024
 [*]
 [dumpfile] "/home/ttsurumi/workspace/rv32i-on-analogue-pocket/vcd/rv32ui-p-add.vcd"
-[dumpfile_mtime] "Sat Jul 20 03:40:01 2024"
-[dumpfile_size] 778346
+[dumpfile_mtime] "Sun Jul 21 05:34:19 2024"
+[dumpfile_size] 45349
 [savefile] "/home/ttsurumi/workspace/rv32i-on-analogue-pocket/vcd/rv32ui-p-add.gtkw"
 [timestart] 0
-[size] 2474 763
-[pos] 709 2835
-*-2.767942 14 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[size] 2484 1559
+[pos] -1 -1
+*-2.767942 5 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] TOP.
 [treeopen] TOP.rv32i_top.
 [sst_width] 214
-[signals_width] 254
+[signals_width] 273
 [sst_expanded] 1
-[sst_vpaned_height] 209
+[sst_vpaned_height] 674
 @28
 TOP.clk
 TOP.reset_n
@@ -43,8 +43,29 @@ TOP.rv32i_top.w_miss
 @2028
 ^5 /home/ttsurumi/workspace/rv32i-on-analogue-pocket/vcd_defs/pc_input.txt
 TOP.rv32i_top.pc_input_type[1:0]
-@2029
 ^4 /home/ttsurumi/workspace/rv32i-on-analogue-pocket/vcd_defs/branch_type.txt
 TOP.rv32i_top.branch_type[1:0]
+@22
+TOP.rv32i_top.p2_pc[31:0]
+TOP.rv32i_top.rom0.data[31:0]
+TOP.rv32i_top.p2_imm[31:0]
+TOP.rv32i_top.p2_pc[31:0]
+TOP.rv32i_top.p1_pc[31:0]
+@2029
+^5 /home/ttsurumi/workspace/rv32i-on-analogue-pocket/vcd_defs/pc_input.txt
+TOP.rv32i_top.p2_pc_input_type[1:0]
+@22
+TOP.rv32i_top.imm[31:0]
+TOP.rv32i_top.p2_imm[31:0]
+@28
+TOP.rv32i_top.p2_valid
+TOP.rv32i_top.pc_input_type[1:0]
+@22
+TOP.rv32i_top.p2_alu_input1[31:0]
+TOP.rv32i_top.p2_alu_input2[31:0]
+TOP.rv32i_top.alu_input1[31:0]
+TOP.rv32i_top.alu_input2[31:0]
+TOP.rv32i_top.p1_instr[31:0]
+TOP.rv32i_top.instr[31:0]
 [pattern_trace] 1
 [pattern_trace] 0
