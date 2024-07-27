@@ -121,10 +121,10 @@ module rv32i_top import rv32i::*;
 
   assign miss = (
     (
-      (p2_pc_input_type == PC_INPUT_ALU && branch_type != BRANCH_NONE) || 
-      p2_pc_input_type == PC_INPUT_CSR
+      (p4_pc_input_type == PC_INPUT_ALU && p4_branch_type != BRANCH_NONE) || 
+      p4_pc_input_type == PC_INPUT_CSR
     ) && 
-    p2_valid
+    p4_valid
   );
 
   // pipe line 2
@@ -148,6 +148,8 @@ module rv32i_top import rv32i::*;
   reg_mask_e reg_mask; // reg mask
   ram_mask_e ram_mask; // ram mask
   mem_op_e mem_op; // memory write enable
+  logic [31:0] forwarding_alu_input1; // pipe line 2 alu_input1
+  logic [31:0] forwarding_alu_input2; // pipe line 2 alu_input2
 
   logic [31:0] p2_pc = 0; // pipe line 2 pc
   logic [31:0] p2_alu_input1; // pipe line 2 alu_input1
@@ -160,6 +162,8 @@ module rv32i_top import rv32i::*;
   logic [31:0] p2_csr_data; // pipe line 2 csr alu result
   logic [11:0] p2_csr_addr; // pipe line 2 CSR address
   pc_input_type_e p2_pc_input_type = PC_INPUT_NEXT; // pipe line 2 PC INPUT
+  alu_input1_type_e p2_alu_input1_type; // ALU INPUT TYPE 1
+  alu_input2_type_e p2_alu_input2_type; // ALU INPUT TYPE 2
   alu_op_e p2_alu_op; // pipe line 2 alu_op
   logic p2_valid = 0; // pipe line 2 valid
   mem_op_e p2_mem_op; // pipe line 2 memory write enable
@@ -192,6 +196,8 @@ module rv32i_top import rv32i::*;
     p2_r_we <= r_we;
     p2_csr_we <= csr_we;
     p2_csr_addr <= csr_addr;
+    p2_alu_input1_type <= alu_input1_type;
+    p2_alu_input2_type <= alu_input2_type;
   end
 
   // pipe line 4
@@ -200,8 +206,8 @@ module rv32i_top import rv32i::*;
   logic [31:0] p4_imm; // pipe line 4 immediate
   logic [31:0] p4_ram_out; // pipe line 4 ram output
   logic [31:0] p4_csr_data; // pipe line 4 csr data
+  logic [11:0] p4_csr_addr; // pipe line 2 CSR address
   logic [4:0] p4_rd; // pipe line 4 destination register
-  logic [11:0] p4_csr_addr; // pipe line 4 CSR address
   mem_op_e p4_mem_op; // pipe line 4 memory write enable
   wb_from_e p4_wb_from; // pipe line 4 write back from
   ram_mask_e p4_ram_mask; // pipe line 4 reg mask
@@ -295,26 +301,39 @@ module rv32i_top import rv32i::*;
     .data(csr_data)
   );
   assign alu_input1 = alu_input1_type == ALU_INPUT1_IMM ? imm :
-                      alu_input1_type == ALU_INPUT1_RS1 ? (
-                        (forwarding & p4_rd == p2_rs1) ? masked_reg_wb : rs1_data
-                      ) :
+                      alu_input1_type == ALU_INPUT1_RS1 ? rs1_data :
                       alu_input1_type == ALU_INPUT1_PC ? p1_pc : 
                       alu_input1_type == ALU_INPUT1_CSR ? csr_data : 
                       32'b0;
   assign alu_input2 = alu_input2_type == ALU_INPUT2_IMM ? imm :
-                      alu_input2_type == ALU_INPUT2_RS1 ? (
-                        (forwarding & p4_rd == p2_rs1) ? masked_reg_wb : rs1_data
-                      ) : 
-                      alu_input2_type == ALU_INPUT2_RS2 ? (
-                        (forwarding & p4_rd == p2_rs2) ? masked_reg_wb : rs2_data
-                      ) : 
+                      alu_input2_type == ALU_INPUT2_RS1 ? rs1_data : 
+                      alu_input2_type == ALU_INPUT2_RS2 ? rs2_data : 
                       32'b0;
+  assign forwarding_alu_input1 = (
+    p2_alu_input1_type == ALU_INPUT1_RS1 & 
+    forwarding & 
+    p4_rd == p2_rs1
+  ) ? masked_reg_wb : 
+  (
+    p2_alu_input1_type == ALU_INPUT1_CSR &
+    p4_csr_addr == p2_csr_addr 
+  ) ? p4_csr_data : p2_alu_input1;
+
+  assign forwarding_alu_input2 = (
+    p2_alu_input2_type == ALU_INPUT2_RS1 & 
+    forwarding & 
+    p4_rd == p2_rs1
+  ) ? masked_reg_wb : (
+    p2_alu_input2_type == ALU_INPUT2_RS2 &
+    forwarding & 
+    p4_rd == p2_rs2
+  ) ? masked_reg_wb : p2_alu_input2;
 
   // EX Stage
   alu alu0 (
     // -- Inputs
-    .data1(p2_alu_input1),
-    .data2(p2_alu_input2),
+    .data1(forwarding_alu_input1),
+    .data2(forwarding_alu_input2),
     .alu_op(p2_alu_op),
     // -- Outputs
     .result(alu_result),
