@@ -67,6 +67,7 @@ module rv32i_top import rv32i::*;
 );
   logic [31:0] pc;
   logic [31:0] next_pc;
+  logic miss;
 
   branch_type_e branch_type;               // branch type
   csr_op_e csr_op;                         // CSR operation
@@ -80,11 +81,10 @@ module rv32i_top import rv32i::*;
   logic [31:0] ram_out; // ram output
   logic [31:0] reg_wb; // register write back
 
-  logic w_miss;
 
   assign next_pc = stall ? pc:
                    reset_n == 0 ? 0:
-                   !w_miss ? pc + 4:
+                   !miss ? pc + 4:
                    p2_pc_input_type == PC_INPUT_CSR ? p2_csr_data :
                    p2_pc_input_type == PC_INPUT_NEXT ? p2_pc + 4 :
                    p2_pc_input_type == PC_INPUT_ALU ? (
@@ -112,10 +112,10 @@ module rv32i_top import rv32i::*;
   always_ff @(posedge clk) begin
     p1_pc <= pc;
     p1_instr <= reset_n ? instr : 32'h0000_0000;
-    p1_valid <= !w_miss;
+    p1_valid <= !miss;
   end
 
-  assign w_miss = (
+  assign miss = (
     (
       (p2_pc_input_type == PC_INPUT_ALU && branch_type != BRANCH_NONE) || 
       p2_pc_input_type == PC_INPUT_CSR
@@ -175,7 +175,7 @@ module rv32i_top import rv32i::*;
     p2_csr_data <= csr_data;
     p2_pc_input_type <= pc_input_type;
     p2_alu_op <= alu_op;
-    p2_valid <= !w_miss & p1_valid;
+    p2_valid <= !miss & p1_valid;
     p2_mem_op <= mem_op;
     p2_wb_from <= wb_from;
     p2_ram_mask <= ram_mask;

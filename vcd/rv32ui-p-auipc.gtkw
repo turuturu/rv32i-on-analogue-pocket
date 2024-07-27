@@ -37,6 +37,6 @@ TOP.rv32i_top.branch_type[1:0]
 TOP.rv32i_top.p1_pc[31:0]
 @28
 TOP.rv32i_top.p1_valid
-TOP.rv32i_top.w_miss
+TOP.rv32i_top.miss
 [pattern_trace] 1
 [pattern_trace] 0

@@ -37,7 +37,7 @@ TOP.rv32i_top.branch_type[1:0]
 TOP.rv32i_top.p1_pc[31:0]
 @28
 TOP.rv32i_top.p1_valid
-TOP.rv32i_top.w_miss
+TOP.rv32i_top.miss
 @2028
 ^5 /home/ttsurumi/workspace/rv32i-on-analogue-pocket/vcd_defs/wb_from.txt
 TOP.rv32i_top.wb_from[2:0]

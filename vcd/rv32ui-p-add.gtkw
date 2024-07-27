@@ -39,7 +39,7 @@ TOP.rv32i_top.rom0.data[31:0]
 TOP.rv32i_top.p1_pc[31:0]
 @28
 TOP.rv32i_top.p1_valid
-TOP.rv32i_top.w_miss
+TOP.rv32i_top.miss
 @2028
 ^5 /home/ttsurumi/workspace/rv32i-on-analogue-pocket/vcd_defs/pc_input.txt
 TOP.rv32i_top.pc_input_type[1:0]
