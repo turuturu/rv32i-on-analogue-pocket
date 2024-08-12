@@ -83,7 +83,7 @@ module rv32i_top import rv32i::*;
   logic forwarding;
 
   assign forwarding = p4_valid && 
-    p4_pc_input_type == PC_INPUT_ALU && 
+    p4_mem_op != MEM_STORE &&
     p4_branch_type == BRANCH_NONE;
 
   assign next_pc = stall ? pc:
@@ -312,7 +312,8 @@ module rv32i_top import rv32i::*;
   assign forwarding_alu_input1 = (
     p2_alu_input1_type == ALU_INPUT1_RS1 & 
     forwarding & 
-    p4_rd == p2_rs1
+    p4_rd == p2_rs1 &
+    |p4_rd
   ) ? masked_reg_wb : 
   (
     p2_alu_input1_type == ALU_INPUT1_CSR &
@@ -322,11 +323,13 @@ module rv32i_top import rv32i::*;
   assign forwarding_alu_input2 = (
     p2_alu_input2_type == ALU_INPUT2_RS1 & 
     forwarding & 
-    p4_rd == p2_rs1
+    p4_rd == p2_rs1 &
+    |p4_rd
   ) ? masked_reg_wb : (
     p2_alu_input2_type == ALU_INPUT2_RS2 &
     forwarding & 
-    p4_rd == p2_rs2
+    p4_rd == p2_rs2 &
+    |p4_rd
   ) ? masked_reg_wb : p2_alu_input2;
 
   // EX Stage
@@ -346,9 +349,9 @@ module rv32i_top import rv32i::*;
     // -- Inputs
     .clk,
     .addr(alu_result),
-    .wdata((forwarding & p4_rd == p2_rs2) ? masked_reg_wb : p2_rs2_data),
-    .mem_op(p4_valid ? p4_mem_op : MEM_LOAD),
-    .ram_mask(p4_ram_mask),
+    .wdata((forwarding & p4_rd == p2_rs2 & |p4_rd) ? masked_reg_wb  : p2_rs2_data),
+    .mem_op(p2_valid ? p2_mem_op : MEM_LOAD),
+    .ram_mask(p2_ram_mask),
     // -- Outputs
     .rdata(ram_out)
   );
