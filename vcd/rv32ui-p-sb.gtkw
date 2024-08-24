@@ -1,19 +1,19 @@
 [*]
-[*] GTKWave Analyzer v3.3.103 (w)1999-2019 BSI
-[*] Sat Jul 20 10:44:50 2024
+[*] GTKWave Analyzer v3.3.100 (w)1999-2019 BSI
+[*] Mon Aug 12 11:31:32 2024
 [*]
-[dumpfile] "/home/ttsurumi/workspace/rv32i-on-analogue-pocket/vcd/rv32ui-p-sb.vcd"
-[dumpfile_mtime] "Sat Jul 20 09:35:51 2024"
-[dumpfile_size] 144987
-[savefile] "/home/ttsurumi/workspace/rv32i-on-analogue-pocket/vcd/rv32ui-p-sb.gtkw"
-[timestart] 144
-[size] 2475 564
-[pos] -4 -474
-*-2.138053 164 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[dumpfile] "\\wsl.localhost\Ubuntu-20.04\home\ttsurumi\workspace\rv32i-on-analogue-pocket\vcd\rv32ui-p-sb.vcd"
+[dumpfile_mtime] "Mon Aug 12 08:50:28 2024"
+[dumpfile_size] 458230
+[savefile] "\\wsl.localhost\Ubuntu-20.04\home\ttsurumi\workspace\rv32i-on-analogue-pocket\vcd\rv32ui-p-sb.gtkw"
+[timestart] 371
+[size] 1664 1038
+[pos] -1 -1
+*-2.539520 395 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] TOP.
 [treeopen] TOP.rv32i_top.
 [sst_width] 214
-[signals_width] 182
+[signals_width] 246
 [sst_expanded] 1
 [sst_vpaned_height] 139
 @28
@@ -22,16 +22,16 @@ TOP.clk
 TOP.rv32i_top.pc[31:0]
 TOP.rv32i_top.next_pc[31:0]
 @2028
-^4 /home/ttsurumi/workspace/rv32i-on-analogue-pocket/vcd_defs/alu_op.txt
+^1 \\wsl.localhost\Ubuntu-20.04\home\ttsurumi\workspace\rv32i-on-analogue-pocket\vcd_defs\alu_op.txt
 TOP.rv32i_top.alu_op[4:0]
-^1 /home/ttsurumi/workspace/rv32i-on-analogue-pocket/vcd_defs/opcode.txt
+^2 \\wsl.localhost\Ubuntu-20.04\home\ttsurumi\workspace\rv32i-on-analogue-pocket\vcd_defs\opcode.txt
 TOP.rv32i_top.decoder0.opcode[6:0]
-^2 /home/ttsurumi/workspace/rv32i-on-analogue-pocket/vcd_defs/optype.txt
+^3 \\wsl.localhost\Ubuntu-20.04\home\ttsurumi\workspace\rv32i-on-analogue-pocket\vcd_defs\optype.txt
 TOP.rv32i_top.decoder0.optype[2:0]
 @22
 TOP.rv32i_top.alu_result[31:0]
 @2028
-^3 /home/ttsurumi/workspace/rv32i-on-analogue-pocket/vcd_defs/branch_type.txt
+^4 \\wsl.localhost\Ubuntu-20.04\home\ttsurumi\workspace\rv32i-on-analogue-pocket\vcd_defs\branch_type.txt
 TOP.rv32i_top.branch_type[1:0]
 @22
 TOP.rv32i_top.p1_pc[31:0]
@@ -39,16 +39,54 @@ TOP.rv32i_top.p1_pc[31:0]
 TOP.rv32i_top.p1_valid
 TOP.rv32i_top.miss
 @2028
-^5 /home/ttsurumi/workspace/rv32i-on-analogue-pocket/vcd_defs/wb_from.txt
+^5 \\wsl.localhost\Ubuntu-20.04\home\ttsurumi\workspace\rv32i-on-analogue-pocket\vcd_defs\wb_from.txt
 TOP.rv32i_top.wb_from[2:0]
 @22
 TOP.rv32i_top.masked_reg_wb[31:0]
 TOP.rv32i_top.alu0.data1[31:0]
 TOP.rv32i_top.alu0.data2[31:0]
-@2029
-^6 /home/ttsurumi/workspace/rv32i-on-analogue-pocket/vcd_defs/reg_mask.txt
+@2028
+^6 \\wsl.localhost\Ubuntu-20.04\home\ttsurumi\workspace\rv32i-on-analogue-pocket\vcd_defs\reg_mask.txt
 TOP.rv32i_top.reg_mask[2:0]
 @22
 TOP.rv32i_top.reg_wb[31:0]
+TOP.rv32i_top.alu_result[31:0]
+TOP.rv32i_top.p2_alu_input1[31:0]
+TOP.rv32i_top.p2_alu_input2[31:0]
+TOP.rv32i_top.p2_pc[31:0]
+TOP.rv32i_top.forwarding_alu_input1[31:0]
+TOP.rv32i_top.forwarding_alu_input2[31:0]
+TOP.rv32i_top.p4_rd[4:0]
+TOP.rv32i_top.p2_rs1[4:0]
+TOP.rv32i_top.p2_alu_input1[31:0]
+@2028
+^1 \\wsl.localhost\Ubuntu-20.04\home\ttsurumi\workspace\rv32i-on-analogue-pocket\vcd_defs\alu_op.txt
+TOP.rv32i_top.p2_alu_op[4:0]
+^6 \\wsl.localhost\Ubuntu-20.04\home\ttsurumi\workspace\rv32i-on-analogue-pocket\vcd_defs\reg_mask.txt
+TOP.rv32i_top.p4_reg_mask[2:0]
+^5 \\wsl.localhost\Ubuntu-20.04\home\ttsurumi\workspace\rv32i-on-analogue-pocket\vcd_defs\wb_from.txt
+TOP.rv32i_top.p4_wb_from[2:0]
+@28
+TOP.rv32i_top.p4_r_we
+TOP.rv32i_top.p4_valid
+@22
+TOP.rv32i_top.rs1_data[31:0]
+TOP.rv32i_top.rs1[4:0]
+@2028
+^7 \\wsl.localhost\Ubuntu-20.04\home\ttsurumi\workspace\rv32i-on-analogue-pocket\vcd_defs\alu_input1.txt
+TOP.rv32i_top.p2_alu_input1_type[2:0]
+^8 \\wsl.localhost\Ubuntu-20.04\home\ttsurumi\workspace\rv32i-on-analogue-pocket\vcd_defs\alu_input2.txt
+TOP.rv32i_top.p2_alu_input2_type[1:0]
+@22
+TOP.rv32i_top.p2_rd[4:0]
+@23
+TOP.rv32i_top.rd[4:0]
+@22
+TOP.rv32i_top.instr[31:0]
+TOP.rv32i_top.rom0.data[31:0]
+TOP.rv32i_top.rs2[4:0]
+TOP.rv32i_top.p1_instr[31:0]
+@28
+TOP.rv32i_top.loaduse
 [pattern_trace] 1
 [pattern_trace] 0

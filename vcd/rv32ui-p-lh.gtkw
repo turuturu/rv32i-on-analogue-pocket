@@ -2,10 +2,10 @@
 [*] GTKWave Analyzer v3.3.100 (w)1999-2019 BSI
 [*] Sat Aug 24 06:11:13 2024
 [*]
-[dumpfile] "\\wsl.localhost\Ubuntu-20.04\home\ttsurumi\workspace\rv32i-on-analogue-pocket\vcd\rv32ui-p-ma_data.vcd"
+[dumpfile] "\\wsl.localhost\Ubuntu-20.04\home\ttsurumi\workspace\rv32i-on-analogue-pocket\vcd\rv32ui-p-lh.vcd"
 [dumpfile_mtime] "Sat Aug 24 06:09:34 2024"
 [dumpfile_size] 405994
-[savefile] "\\wsl.localhost\Ubuntu-20.04\home\ttsurumi\workspace\rv32i-on-analogue-pocket\vcd\rv32ui-p-ma_data.gtkw"
+[savefile] "\\wsl.localhost\Ubuntu-20.04\home\ttsurumi\workspace\rv32i-on-analogue-pocket\vcd\rv32ui-p-lh.gtkw"
 [timestart] 322
 [size] 1664 1038
 [pos] -1 -1
