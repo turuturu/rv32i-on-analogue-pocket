@@ -79,6 +79,7 @@ module rv32i_top import rv32i::*;
   logic [31:0] csr_alu_result; // csr alu result
   logic [31:0] csr_alu_input; // csr alu input
   logic [31:0] ram_out; // ram output
+  logic [31:0] ram_out2; // ram output
   logic [31:0] reg_wb; // register write back
   logic [31:0] masked_alu_result; // register write back
   logic loaduse;
@@ -457,13 +458,15 @@ module rv32i_top import rv32i::*;
   ram ram0 (
     // -- Inputs
     .clk,
-    .addr(p3_alu_result),
+    .addr1(p3_alu_result),
+    .addr2(p3_alu_result),
     .wdata(p3_rs2_data),
     // .wdata((p4_forwarding & p4_rd == p3_rs2 & |p4_rd) ? masked_reg_wb  : p3_rs2_data),
     .mem_op(p3_valid ? p3_mem_op : MEM_LOAD),
     .ram_mask(p3_ram_mask),
     // -- Outputs
-    .rdata(ram_out)
+    .rdata1(ram_out),
+    .rdata2(ram_out2)
   );
 
 

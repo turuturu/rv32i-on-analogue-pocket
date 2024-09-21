@@ -54,11 +54,11 @@ TEST_F(RamTest, READ_WRITE) {
         dut->clk = 0;
         dut->eval();
         dut->clk = 1;
-        dut->addr = i; // addr is aligned to 4 bytes
+        dut->addr1 = i; // addr is aligned to 4 bytes
         dut->mem_op = Vrv32i_ram_rv32i::MEM_LOAD;
         dut->ram_mask = Vrv32i_ram_rv32i::RAM_MASK_B;
         dut->eval();
-        ASSERT_EQ(vals[i], dut->rdata);
+        ASSERT_EQ(vals[i], dut->rdata1);
         i++;
     }
     // write test
@@ -66,7 +66,7 @@ TEST_F(RamTest, READ_WRITE) {
         dut->clk = 0;
         dut->eval();
         dut->clk = 1;
-        dut->addr = i; // addr is aligned to 4 bytes
+        dut->addr1 = i; // addr is aligned to 4 bytes
         dut->wdata = i * i;
         dut->mem_op = Vrv32i_ram_rv32i::MEM_STORE;
         dut->ram_mask = Vrv32i_ram_rv32i::RAM_MASK_B;
@@ -75,7 +75,7 @@ TEST_F(RamTest, READ_WRITE) {
         // ASSERT_EQ(i * i, dut->ram->inner_ram1[i]);
         // ASSERT_EQ(i * i, dut->ram->inner_ram2[i]);
         // ASSERT_EQ(i * i, dut->ram->inner_ram3[i]);
-        ASSERT_EQ(i * i, dut->rdata);
+        ASSERT_EQ(i * i, dut->rdata1);
     }
 
 }
