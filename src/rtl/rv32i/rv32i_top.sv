@@ -16,6 +16,9 @@ module rv32i_top import rv32i::*;
     input logic clk,
     input logic stall,
     input logic reset_n,
+    input wire [31:0] ram_addr2,
+    output wire [31:0] ram_out2,
+
     ///////////////////////////////////////////////////
     // cellular psram 0 and 1, two chips (64mbit x2 dual die per chip)
     output  wire    [21:16] cram0_a,
@@ -79,7 +82,7 @@ module rv32i_top import rv32i::*;
   logic [31:0] csr_alu_result; // csr alu result
   logic [31:0] csr_alu_input; // csr alu input
   logic [31:0] ram_out; // ram output
-  logic [31:0] ram_out2; // ram output
+  // logic [31:0] ram_out2; // ram output
   logic [31:0] reg_wb; // register write back
   logic [31:0] masked_alu_result; // register write back
   logic loaduse;
@@ -317,13 +320,17 @@ module rv32i_top import rv32i::*;
     // -- Outputs
     .masked_data(masked_alu_result)
   );
+  logic rom_re = 1;
+  logic rom_oe;
   // IF Stage
   rom rom0(
     // -- Inputs
     .clk,
     .addr(next_pc),
+    .re(rom_re),
     // -- Outputs
-    .data(instr)
+    .data(instr),
+    .oe(rom_oe)
   );
 
   // ID Stage  
@@ -459,7 +466,7 @@ module rv32i_top import rv32i::*;
     // -- Inputs
     .clk,
     .addr1(p3_alu_result),
-    .addr2(p3_alu_result),
+    .addr2(ram_addr2),
     .wdata(p3_rs2_data),
     // .wdata((p4_forwarding & p4_rd == p3_rs2 & |p4_rd) ? masked_reg_wb  : p3_rs2_data),
     .mem_op(p3_valid ? p3_mem_op : MEM_LOAD),
