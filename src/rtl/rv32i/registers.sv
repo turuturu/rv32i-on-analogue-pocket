@@ -14,6 +14,7 @@ module registers import rv32i::*;
     output logic [31:0] rs1_data,
     output logic [31:0] rs2_data
 );
+
   logic [31:0] regs [0:31]/*verilator public*/;
   logic bypass_rs1;
   logic bypass_rs2;
@@ -27,7 +28,6 @@ module registers import rv32i::*;
 
   assign rs1_data = rs1_addr == 5'b0 ? 32'b0 : bypass_rs1 ? rd_data : regs[rs1_addr];
   assign rs2_data = rs2_addr == 5'b0 ? 32'b0 : bypass_rs2 ? rd_data : regs[rs2_addr];
-
 endmodule
 
 `endif

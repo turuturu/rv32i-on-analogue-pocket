@@ -5,7 +5,7 @@
 
 module rom import rv32i::*;
 #(
-  parameter ADDR_LENGTH = 10, // 4KB
+  parameter ADDR_LENGTH = 14, // 4KB
   parameter DELAY = 0,
   // parameter ADDR_LENGTH = 8, // 1KB
   parameter MEM_SIZE = 2**ADDR_LENGTH
@@ -32,7 +32,7 @@ module rom import rv32i::*;
   always_ff @(posedge clk) begin
     inner_addr <= (counter == 0 & re) ? addr[ADDR_LENGTH+1:2] : inner_addr;
     counter <= DELAY == 0 ? 0 : 
-              (counter == 0 & re) ? 0 :
+              (counter == 0 & re) ? 1 :
               (counter == 0 | counter == DELAY) ? 0 :
               counter + 1;
     oe <= counter == DELAY;

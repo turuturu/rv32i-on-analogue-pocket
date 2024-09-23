@@ -8,65 +8,20 @@
 `include "rv32i/ram.sv"
 `include "rv32i/reg_mask.sv"
 `include "rv32i/registers.sv"
-`include "rv32i/rom.sv"
-`include "rv32i/psram.sv"
+// `include "rv32i/rom.sv"
+// `include "rv32i/psram.sv"
 
 module rv32i_top import rv32i::*;
 (
     input logic clk,
     input logic stall,
     input logic reset_n,
+    input logic [31:0] instr,
+    input logic rom_oe,
     input wire [31:0] ram_addr2,
-    output wire [31:0] ram_out2,
-
-    ///////////////////////////////////////////////////
-    // cellular psram 0 and 1, two chips (64mbit x2 dual die per chip)
-    output  wire    [21:16] cram0_a,
-    inout   wire    [15:0]  cram0_dq,
-    input   wire            cram0_wait,
-    output  wire            cram0_clk,
-    output  wire            cram0_adv_n,
-    output  wire            cram0_cre,
-    output  wire            cram0_ce0_n,
-    output  wire            cram0_ce1_n,
-    output  wire            cram0_oe_n,
-    output  wire            cram0_we_n,
-    output  wire            cram0_ub_n,
-    output  wire            cram0_lb_n,
-    
-    output  wire    [21:16] cram1_a,
-    inout   wire    [15:0]  cram1_dq,
-    input   wire            cram1_wait,
-    output  wire            cram1_clk,
-    output  wire            cram1_adv_n,
-    output  wire            cram1_cre,
-    output  wire            cram1_ce0_n,
-    output  wire            cram1_ce1_n,
-    output  wire            cram1_oe_n,
-    output  wire            cram1_we_n,
-    output  wire            cram1_ub_n,
-    output  wire            cram1_lb_n,
-    
-    ///////////////////////////////////////////////////
-    // sdram, 512mbit 16bit
-    output  wire    [12:0]  dram_a,
-    output  wire    [1:0]   dram_ba,
-    inout   wire    [15:0]  dram_dq,
-    output  wire    [1:0]   dram_dqm,
-    output  wire            dram_clk,
-    output  wire            dram_cke,
-    output  wire            dram_ras_n,
-    output  wire            dram_cas_n,
-    output  wire            dram_we_n,
-    
-    ///////////////////////////////////////////////////
-    // sram, 1mbit 16bit
-    output  wire    [16:0]  sram_a,
-    inout   wire    [15:0]  sram_dq,
-    output  wire            sram_oe_n,
-    output  wire            sram_we_n,
-    output  wire            sram_ub_n,
-    output  wire            sram_lb_n    
+    output logic [31:0] rom_addr,
+    output logic rom_re,
+    output wire [31:0] ram_out2
 );
   logic [31:0] pc;
   logic [31:0] next_pc;
@@ -88,6 +43,20 @@ module rv32i_top import rv32i::*;
   logic loaduse;
   logic p3_forwarding;
   logic p4_forwarding;
+
+  assign rom_re = 1;
+  // logic rom_oe;
+  // // IF Stage
+  // rom rom0(
+  //   // -- Inputs
+  //   .clk,
+  //   .addr(next_pc),
+  //   .re(rom_re),
+  //   // -- Outputs
+  //   .data(instr),
+  //   .oe(rom_oe)
+  // );
+
 
   assign loaduse = p3_valid & 
     (
@@ -117,6 +86,7 @@ module rv32i_top import rv32i::*;
                      branch_type == BRANCH_ABSOLUTE ? alu_result :
                      p2_pc + 4 // BRANCH_NONE
                    ) : p2_pc;
+  assign rom_addr = next_pc;
 
   always_ff @(posedge clk or negedge reset_n) begin
     if (reset_n == 0) begin
@@ -127,7 +97,7 @@ module rv32i_top import rv32i::*;
   end
   
   // pipe line 1
-  logic [31:0] instr; // instruction
+  // logic [31:0] instr; // instruction
 
   logic [31:0] p1_pc = 0; // pipe line 1 pc
   logic [31:0] p1_instr; // pipe line 1 instruction
@@ -320,18 +290,6 @@ module rv32i_top import rv32i::*;
     // -- Outputs
     .masked_data(masked_alu_result)
   );
-  logic rom_re = 1;
-  logic rom_oe;
-  // IF Stage
-  rom rom0(
-    // -- Inputs
-    .clk,
-    .addr(next_pc),
-    .re(rom_re),
-    // -- Outputs
-    .data(instr),
-    .oe(rom_oe)
-  );
 
   // ID Stage  
   decoder decoder0 (
@@ -353,7 +311,7 @@ module rv32i_top import rv32i::*;
     .mem_op,
     .csr_we
   );
-  
+
   registers registers0 (
     // -- Inputs
     .clk,
@@ -485,41 +443,41 @@ module rv32i_top import rv32i::*;
                   32'b0;
 
 
-  logic psram_read_avail;
-  logic psram_busy;
-  logic [15:0] psram_out; // psram output
+  // logic psram_read_avail;
+  // logic psram_busy;
+  // logic [15:0] psram_out; // psram output
 
-  psram psram0 (
-      .clk(clk),
+  // psram psram0 (
+  //     .clk(clk),
 
-      .bank_sel(0),
-      // Remove bottom most bit, since this is a 8bit address and the RAM wants a 16bit address
-      .addr(alu_result[22:1]),
+  //     .bank_sel(0),
+  //     // Remove bottom most bit, since this is a 8bit address and the RAM wants a 16bit address
+  //     .addr(alu_result[22:1]),
 
-      .write_en(mem_op == MEM_STORE ? 1'b1 : 1'b0),
-      .data_in(rs2_data[15:0]),
-      .write_high_byte(alu_result[0]),
-      .write_low_byte(~alu_result[0]),
+  //     .write_en(mem_op == MEM_STORE ? 1'b1 : 1'b0),
+  //     .data_in(rs2_data[15:0]),
+  //     .write_high_byte(alu_result[0]),
+  //     .write_low_byte(~alu_result[0]),
 
-      .read_en (mem_op == MEM_LOAD ? 1'b1 : 1'b0),
-      .read_avail(psram_read_avail),
-      .data_out(psram_out),
-      .busy(psram_busy),
+  //     .read_en (mem_op == MEM_LOAD ? 1'b1 : 1'b0),
+  //     .read_avail(psram_read_avail),
+  //     .data_out(psram_out),
+  //     .busy(psram_busy),
 
-      // Actual PSRAM interface
-      .cram_a(cram0_a),
-      .cram_dq(cram0_dq),
-      .cram_wait(cram0_wait),
-      .cram_clk(cram0_clk),
-      .cram_adv_n(cram0_adv_n),
-      .cram_cre(cram0_cre),
-      .cram_ce0_n(cram0_ce0_n),
-      .cram_ce1_n(cram0_ce1_n),
-      .cram_oe_n(cram0_oe_n),
-      .cram_we_n(cram0_we_n),
-      .cram_ub_n(cram0_ub_n),
-      .cram_lb_n(cram0_lb_n)
-  );
+  //     // Actual PSRAM interface
+  //     .cram_a(cram0_a),
+  //     .cram_dq(cram0_dq),
+  //     .cram_wait(cram0_wait),
+  //     .cram_clk(cram0_clk),
+  //     .cram_adv_n(cram0_adv_n),
+  //     .cram_cre(cram0_cre),
+  //     .cram_ce0_n(cram0_ce0_n),
+  //     .cram_ce1_n(cram0_ce1_n),
+  //     .cram_oe_n(cram0_oe_n),
+  //     .cram_we_n(cram0_we_n),
+  //     .cram_ub_n(cram0_ub_n),
+  //     .cram_lb_n(cram0_lb_n)
+  // );
 
 
 endmodule
