@@ -42,6 +42,7 @@ TEST_F(RomTest, READ_WRITE) {
         dut->clk = 0;
         dut->eval();
         dut->clk = 1;
+        dut->re = 1;
         dut->addr = i * 4;
         dut->eval();
         ASSERT_EQ(vals[i], dut->data);
