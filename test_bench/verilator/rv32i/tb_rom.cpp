@@ -45,8 +45,12 @@ TEST_F(RomTest, READ_WRITE) {
         dut->re = 1;
         dut->addr = i * 4;
         dut->eval();
-        ASSERT_EQ(vals[i], dut->data);
-        i++;
+        if(dut->oe == 1){
+            // ASSERT_EQ(i, dut->rom->inner_addr);
+            ASSERT_EQ(vals[i], dut->data);
+            dut->re = 0;
+            i++;
+        }
     }
     // dut->eval();
 } 

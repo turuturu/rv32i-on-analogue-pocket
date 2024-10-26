@@ -18,14 +18,12 @@ module rv32i_top_wrapper import rv32i::*;
   logic stall/*verilator public*/;
   logic rom_oe/*verilator public*/;
   logic rom_re/*verilator public*/;
-  assign stall = 0;
 
   rv32i_top rv32i_top0(
     // -- Inputs
     .clk(clk),
-    .stall(stall),
     .reset_n(reset_n),
-    .instr(rom_out),
+    .rom_out(rom_out),
     .rom_oe(rom_oe),
     .ram_addr2(ram_addr2),
     // -- Outputs

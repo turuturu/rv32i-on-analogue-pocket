@@ -26,7 +26,7 @@ class Rv32iTopWrapperTest : public ::testing::Test {
     void SetUp() override { dut = new Vrv32i_rv32i_top_wrapper(); }
 
     void TearDown() override {
-        // dut->final();
+        dut->final();
         // delete dut;
     }
 
@@ -89,7 +89,7 @@ class Rv32iTopWrapperTest : public ::testing::Test {
         dut->eval();
         tfp->dump(cnt++);
         dut->reset_n = 1;
-        while (dut->rv32i_top_wrapper->rv32i_top0->pc != 0x80000044 && cnt < 2000) {
+        while (dut->rv32i_top_wrapper->rv32i_top0->pc != 0x80000044 && cnt < 20000) {
             dut->clk = 1;
             dut->eval();
             tfp->dump(cnt++);

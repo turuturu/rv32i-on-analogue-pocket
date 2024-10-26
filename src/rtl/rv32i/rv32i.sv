@@ -2,6 +2,9 @@
 `define __RV32I_DEFINE_SV
 
 package rv32i;
+
+`define CACHE_LENGTH 5
+
 typedef enum logic [4:0] {
   ALU_JAL,
   ALU_JALR,
@@ -56,6 +59,11 @@ typedef enum logic {
   MEM_LOAD,
   MEM_STORE
 } mem_op_e /*verilator public*/;
+
+typedef enum logic {
+  CACHE_LOAD,
+  CACHE_STORE
+} cache_op_e /*verilator public*/;
 
 typedef enum logic [1:0] {
   BRANCH_ABSOLUTE,
@@ -126,6 +134,18 @@ typedef enum logic [1:0] {
   CSR_RS,
   CSR_RC
 } csr_op_e/*verilator public*/;
+
+typedef struct packed {
+  logic isvalid;
+  logic [24:0] tag;
+  logic [31:0] data;
+} rv32i_rom_cache_data_s;
+
+typedef struct packed {
+  logic [24:0] tag;
+  logic [`CACHE_LENGTH-1:0] index;
+  logic [1:0] offset;
+} rv32i_rom_cache_key_s;
 
 typedef struct packed {
   logic [6:0] funct7;

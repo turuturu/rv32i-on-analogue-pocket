@@ -8,15 +8,15 @@
 `include "rv32i/ram.sv"
 `include "rv32i/reg_mask.sv"
 `include "rv32i/registers.sv"
+`include "rv32i/rom_cache.sv"
 // `include "rv32i/rom.sv"
 // `include "rv32i/psram.sv"
 
 module rv32i_top import rv32i::*;
 (
     input logic clk,
-    input logic stall,
     input logic reset_n,
-    input logic [31:0] instr,
+    input logic [31:0] rom_out,
     input logic rom_oe,
     input wire [31:0] ram_addr2,
     output logic [31:0] rom_addr,
@@ -26,12 +26,13 @@ module rv32i_top import rv32i::*;
   logic [31:0] pc;
   logic [31:0] next_pc;
   logic miss;
+  logic stall;
 
   branch_type_e branch_type;               // branch type
   csr_op_e csr_op;                         // CSR operation
   logic [11:0] csr_addr;                   // CSR address
   csr_alu_input_type_e csr_alu_input_type; // CSR ALU input type
-
+  logic [31:0] instr; // instrruction
   logic [31:0] masked_reg_wb; // masked reg write back
   logic [31:0] masked_alu_result_ram; // masked alu result
   logic [31:0] csr_alu_result; // csr alu result
@@ -43,8 +44,18 @@ module rv32i_top import rv32i::*;
   logic loaduse;
   logic p3_forwarding;
   logic p4_forwarding;
+  logic rom_cache_hit;
+  logic [31:0] rom_cache_out;
+  assign stall = !rom_cache_hit;
+  assign rom_re = !rom_cache_hit;
+  assign instr = rom_cache_out;
+  // assign instr = rom_cache_hit ? rom_cache_out : rom_out;
 
-  assign rom_re = 1;
+  // assign stall = 0;
+  // assign rom_re = 1;
+  // assign instr = rom_out;
+
+
   // logic rom_oe;
   // // IF Stage
   // rom rom0(
@@ -75,8 +86,7 @@ module rv32i_top import rv32i::*;
     p4_mem_op != MEM_STORE &&
     p4_branch_type == BRANCH_NONE;
 
-  assign next_pc = stall ? pc:
-                   loaduse ? pc:
+  assign next_pc = loaduse ? pc:
                    reset_n == 0 ? 0:
                    !miss ? pc + 4:
                    p2_pc_input_type == PC_INPUT_CSR ? p2_csr_data :
@@ -86,12 +96,12 @@ module rv32i_top import rv32i::*;
                      branch_type == BRANCH_ABSOLUTE ? alu_result :
                      p2_pc + 4 // BRANCH_NONE
                    ) : p2_pc;
-  assign rom_addr = next_pc;
+  assign rom_addr = stall ? pc : next_pc;
 
   always_ff @(posedge clk or negedge reset_n) begin
     if (reset_n == 0) begin
       pc <= 32'h8000_0000;
-    end else begin
+    end else if (!stall) begin
       pc <= next_pc;
     end
   end
@@ -104,7 +114,7 @@ module rv32i_top import rv32i::*;
   logic p1_valid = 0; // pipe line 1 valid
 
   always_ff @(posedge clk) begin
-    if(!loaduse) begin
+    if(!stall & !loaduse) begin
       p1_pc <= pc;
       p1_instr <= reset_n ? instr : 32'h0000_0000;
       p1_valid <= !miss;
@@ -170,31 +180,33 @@ module rv32i_top import rv32i::*;
   assign csr_addr = imm[11:0];
   
   always_ff @(posedge clk) begin
-    if(!loaduse) begin
-      p2_pc <= p1_pc;
-      p2_alu_input1 <= alu_input1;
-      p2_alu_input2 <= alu_input2;
-      p2_rs1 <= rs1;
-      p2_rs2 <= rs2;
-      p2_rd <= rd;
-      p2_rs2_data <= rs2_data;
-      p2_imm <= imm;
-      p2_csr_data <= csr_data;
-      p2_pc_input_type <= pc_input_type;
-      p2_alu_op <= alu_op;
-      p2_valid <= !miss & p1_valid;
-      p2_mem_op <= mem_op;
-      p2_wb_from <= wb_from;
-      p2_ram_mask <= ram_mask;
-      p2_reg_mask <= reg_mask;
-      p2_r_we <= r_we;
-      p2_csr_we <= csr_we;
-      p2_csr_addr <= csr_addr;
-      p2_alu_input1_type <= alu_input1_type;
-      p2_alu_input2_type <= alu_input2_type;
-    end else begin
-      p2_alu_input1 <= forwarding_alu_input1;
-      p2_alu_input2 <= forwarding_alu_input2;
+    if(!stall) begin
+      if(!loaduse) begin
+        p2_pc <= p1_pc;
+        p2_alu_input1 <= alu_input1;
+        p2_alu_input2 <= alu_input2;
+        p2_rs1 <= rs1;
+        p2_rs2 <= rs2;
+        p2_rd <= rd;
+        p2_rs2_data <= rs2_data;
+        p2_imm <= imm;
+        p2_csr_data <= csr_data;
+        p2_pc_input_type <= pc_input_type;
+        p2_alu_op <= alu_op;
+        p2_valid <= !miss & p1_valid;
+        p2_mem_op <= mem_op;
+        p2_wb_from <= wb_from;
+        p2_ram_mask <= ram_mask;
+        p2_reg_mask <= reg_mask;
+        p2_r_we <= r_we;
+        p2_csr_we <= csr_we;
+        p2_csr_addr <= csr_addr;
+        p2_alu_input1_type <= alu_input1_type;
+        p2_alu_input2_type <= alu_input2_type;
+      end else begin
+        p2_alu_input1 <= forwarding_alu_input1;
+        p2_alu_input2 <= forwarding_alu_input2;
+      end
     end
   end
 
@@ -219,23 +231,25 @@ module rv32i_top import rv32i::*;
   branch_type_e p3_branch_type; // pipe line 3 branch type
 
   always_ff @(posedge clk) begin
-    p3_pc <= p2_pc;
-    p3_alu_result <= alu_result;
-    p3_rs2_data <= forwarding_rs2_data;
-    p3_rs2 <= p2_rs2;
-    p3_imm <= p2_imm;
-    p3_csr_data <= p2_csr_data;
-    p3_rd <= p2_rd;
-    p3_csr_addr <= p2_csr_addr;
-    p3_mem_op <= p2_mem_op;
-    p3_wb_from <= p2_wb_from;
-    p3_ram_mask <= p2_ram_mask;
-    p3_reg_mask <= p2_reg_mask;
-    p3_r_we <= p2_r_we;
-    p3_csr_we <= p2_csr_we;
-    p3_valid <= p2_valid & !loaduse;
-    p3_pc_input_type <= p2_pc_input_type;
-    p3_branch_type <= branch_type;
+    if(!stall) begin
+      p3_pc <= p2_pc;
+      p3_alu_result <= alu_result;
+      p3_rs2_data <= forwarding_rs2_data;
+      p3_rs2 <= p2_rs2;
+      p3_imm <= p2_imm;
+      p3_csr_data <= p2_csr_data;
+      p3_rd <= p2_rd;
+      p3_csr_addr <= p2_csr_addr;
+      p3_mem_op <= p2_mem_op;
+      p3_wb_from <= p2_wb_from;
+      p3_ram_mask <= p2_ram_mask;
+      p3_reg_mask <= p2_reg_mask;
+      p3_r_we <= p2_r_we;
+      p3_csr_we <= p2_csr_we;
+      p3_valid <= p2_valid & !loaduse;
+      p3_pc_input_type <= p2_pc_input_type;
+      p3_branch_type <= branch_type;
+    end
   end
 
   // pipe line 4
@@ -257,23 +271,36 @@ module rv32i_top import rv32i::*;
   branch_type_e p4_branch_type; // pipe line 4 branch type
 
   always_ff @(posedge clk) begin
-    p4_pc <= p3_pc;
-    p4_alu_result <= p3_alu_result;
-    p4_imm <= p3_imm;
-    p4_ram_out <= ram_out;
-    p4_csr_data <= p3_csr_data;
-    p4_rd <= p3_rd;
-    p4_csr_addr <= p3_csr_addr;
-    p4_mem_op <= p3_mem_op;
-    p4_wb_from <= p3_wb_from;
-    p4_ram_mask <= p3_ram_mask;
-    p4_reg_mask <= p3_reg_mask;
-    p4_r_we <= p3_r_we;
-    p4_csr_we <= p3_csr_we;
-    p4_valid <= p3_valid;
-    p4_pc_input_type <= p3_pc_input_type;
-    p4_branch_type <= p3_branch_type;
+    if(!stall) begin
+      p4_pc <= p3_pc;
+      p4_alu_result <= p3_alu_result;
+      p4_imm <= p3_imm;
+      p4_ram_out <= ram_out;
+      p4_csr_data <= p3_csr_data;
+      p4_rd <= p3_rd;
+      p4_csr_addr <= p3_csr_addr;
+      p4_mem_op <= p3_mem_op;
+      p4_wb_from <= p3_wb_from;
+      p4_ram_mask <= p3_ram_mask;
+      p4_reg_mask <= p3_reg_mask;
+      p4_r_we <= p3_r_we;
+      p4_csr_we <= p3_csr_we;
+      p4_valid <= p3_valid;
+      p4_pc_input_type <= p3_pc_input_type;
+      p4_branch_type <= p3_branch_type;
+    end
   end
+
+  rom_cache rom_cache0 (
+    // -- Inputs
+    .clk(clk),
+    .addr(next_pc),
+    .wdata(rom_out),
+    .cache_op(rom_oe ? CACHE_STORE : CACHE_LOAD),
+    // -- Outputs
+    .hit(rom_cache_hit),
+    .rdata(rom_cache_out)
+  );
 
   reg_mask reg_mask0 (
     // -- Inputs
@@ -315,7 +342,7 @@ module rv32i_top import rv32i::*;
   registers registers0 (
     // -- Inputs
     .clk,
-    .we((p4_r_we == REG_WE & p4_valid ) ? REG_WE : REG_WD),
+    .we((p4_r_we == REG_WE & p4_valid & !stall) ? REG_WE : REG_WD),
     .rs1_addr(rs1),
     .rs2_addr(rs2),
     .rd_addr(p4_rd),
@@ -328,7 +355,7 @@ module rv32i_top import rv32i::*;
   csr_registers csr_registers0 (
     // -- Inputs
     .clk,
-    .we((p4_csr_we == REG_WE & p4_valid) ? REG_WE : REG_WD),
+    .we((p4_csr_we == REG_WE & p4_valid & !stall) ? REG_WE : REG_WD),
     .csr_addr(csr_addr),
     .csr_waddr(p4_csr_addr),
     .wdata(p4_alu_result),
@@ -427,7 +454,7 @@ module rv32i_top import rv32i::*;
     .addr2(ram_addr2),
     .wdata(p3_rs2_data),
     // .wdata((p4_forwarding & p4_rd == p3_rs2 & |p4_rd) ? masked_reg_wb  : p3_rs2_data),
-    .mem_op(p3_valid ? p3_mem_op : MEM_LOAD),
+    .mem_op((p3_valid & !stall) ? p3_mem_op : MEM_LOAD),
     .ram_mask(p3_ram_mask),
     // -- Outputs
     .rdata1(ram_out),

@@ -66,7 +66,7 @@ file(COPY ${RISCV_TESTS_DUMP} DESTINATION ${RISCV_TESTS_BIN_DIR})
 # Test
 ####################
 # targets
-set(targets decoder; alu; csr_registers; ram; registers; rom; rv32i_top_wrapper; reg_mask; psram;)
+set(targets decoder; alu; csr_registers; ram; registers; rom; rv32i_top_wrapper; reg_mask; psram; rom_cache;)
 
 # test bench
 foreach(target IN LISTS targets)
@@ -91,7 +91,7 @@ list(APPEND VERILATOR_ARGS --trace)
 list(APPEND VERILATOR_ARGS --trace-params)
 list(APPEND VERILATOR_ARGS --trace-structs)
 list(APPEND VERILATOR_ARGS --trace-underscore )
-list(APPEND VERILATOR_ARGS --public-flat-rw  )
+list(APPEND VERILATOR_ARGS --public )
 
 # --trace --trace-params --trace-structs --trace-underscore \
 
