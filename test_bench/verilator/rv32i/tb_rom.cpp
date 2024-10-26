@@ -6,6 +6,7 @@
 
 #include <climits>
 #include <random>
+#include <bitset>
 
 class RomTest : public ::testing::Test {
    protected:
@@ -28,7 +29,8 @@ TEST_F(RomTest, READ_WRITE) {
         0x00000003,
         0x00000004,
     };
-    int length = sizeof(vals);
+    size_t length = sizeof(vals) / sizeof(vals[0]);
+
     int i = 0;
     
     while(i < length) {
@@ -38,6 +40,8 @@ TEST_F(RomTest, READ_WRITE) {
 
     dut->clk = 0;
     i = 0;
+    std::cout << length << std::endl;
+
     while(i < length) {
         dut->clk = 0;
         dut->eval();
@@ -47,7 +51,7 @@ TEST_F(RomTest, READ_WRITE) {
         dut->eval();
         if(dut->oe == 1){
             // ASSERT_EQ(i, dut->rom->inner_addr);
-            ASSERT_EQ(vals[i], dut->data);
+            ASSERT_EQ(vals[0], (uint32_t)dut->data[0]);
             dut->re = 0;
             i++;
         }

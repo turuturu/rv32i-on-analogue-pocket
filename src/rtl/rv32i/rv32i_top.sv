@@ -16,7 +16,7 @@ module rv32i_top import rv32i::*;
 (
     input logic clk,
     input logic reset_n,
-    input logic [31:0] rom_out,
+    input logic [31:0] rom_out[2**`CACHE_WORD_ADR_SIZE-1:0],
     input logic rom_oe,
     input wire [31:0] ram_addr2,
     output logic [31:0] rom_addr,
@@ -96,7 +96,9 @@ module rv32i_top import rv32i::*;
                      branch_type == BRANCH_ABSOLUTE ? alu_result :
                      p2_pc + 4 // BRANCH_NONE
                    ) : p2_pc;
-  assign rom_addr = stall ? pc : next_pc;
+  // assign rom_addr = stall ? pc : next_pc;
+  // assign rom_addr = stall ? pc : next_pc;
+  assign rom_addr = pc;
 
   always_ff @(posedge clk or negedge reset_n) begin
     if (reset_n == 0) begin
@@ -294,7 +296,8 @@ module rv32i_top import rv32i::*;
   rom_cache rom_cache0 (
     // -- Inputs
     .clk(clk),
-    .addr(next_pc),
+    // .addr(next_pc),
+    .addr(rom_addr),
     .wdata(rom_out),
     .cache_op(rom_oe ? CACHE_STORE : CACHE_LOAD),
     // -- Outputs

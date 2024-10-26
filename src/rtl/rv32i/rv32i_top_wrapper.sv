@@ -14,7 +14,7 @@ module rv32i_top_wrapper import rv32i::*;
   logic [31:0] ram_addr2;
   logic [31:0] ram_out2;
   logic [31:0] rom_addr/*verilator public*/;
-  logic [31:0] rom_out/*verilator public*/;
+  logic [31:0] rom_out[2**`CACHE_WORD_ADR_SIZE-1:0]/*verilator public*/;
   logic stall/*verilator public*/;
   logic rom_oe/*verilator public*/;
   logic rom_re/*verilator public*/;

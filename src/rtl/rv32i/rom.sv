@@ -15,7 +15,7 @@ module rom import rv32i::*;
     input logic clk,
     input logic [31:0] addr,
     input logic re,
-    output logic [31:0] data,
+    output logic [31:0] data[2**`CACHE_WORD_ADR_SIZE-1:0],
     output logic oe
 );
 
@@ -37,8 +37,22 @@ module rom import rv32i::*;
               (counter == 0 | counter == DELAY) ? 0 :
               counter + 1;
     oe <= counter == DELAY;
+    // for (int i = 0; i < 2**`CACHE_WORD_ADR_SIZE; i++) begin
+    //   assign data[i] = inner_rom[inner_addr + i * 4];
+    // end
+
   end
-  assign data = inner_rom[inner_addr];
+  // for (int i = 0; i < 8; i++) begin
+  //   assign data[i] = inner_rom[inner_addr + i * 4];
+  // end
+  // assign data[0] = inner_rom[inner_addr];
+  // assign data[1] = inner_rom[inner_addr+1];
+  // assign data[2] = inner_rom[inner_addr+2];
+  // assign data[3] = inner_rom[inner_addr+3];
+  assign data[0] = inner_rom[{inner_addr[ADDR_LENGTH-1:`CACHE_WORD_ADR_SIZE],2'b00}];
+  assign data[1] = inner_rom[{inner_addr[ADDR_LENGTH-1:`CACHE_WORD_ADR_SIZE],2'b01}];
+  assign data[2] = inner_rom[{inner_addr[ADDR_LENGTH-1:`CACHE_WORD_ADR_SIZE],2'b10}];
+  assign data[3] = inner_rom[{inner_addr[ADDR_LENGTH-1:`CACHE_WORD_ADR_SIZE],2'b11}];
 endmodule
 
 `endif

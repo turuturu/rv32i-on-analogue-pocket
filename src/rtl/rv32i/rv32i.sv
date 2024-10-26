@@ -4,6 +4,7 @@
 package rv32i;
 
 `define CACHE_LENGTH 5
+`define CACHE_WORD_ADR_SIZE 2
 
 typedef enum logic [4:0] {
   ALU_JAL,
@@ -137,13 +138,15 @@ typedef enum logic [1:0] {
 
 typedef struct packed {
   logic isvalid;
-  logic [24:0] tag;
-  logic [31:0] data;
+  logic [32 - `CACHE_LENGTH - `CACHE_WORD_ADR_SIZE - 2 - 1:0] tag;
+  logic [32 * (2 ** `CACHE_WORD_ADR_SIZE) - 1:0] data;
+  // logic [31:0] data[`CACHE_WORD_ADR_SIZE - 1:0];
 } rv32i_rom_cache_data_s;
 
 typedef struct packed {
-  logic [24:0] tag;
+  logic [32 - `CACHE_LENGTH - `CACHE_WORD_ADR_SIZE - 2 - 1:0] tag;
   logic [`CACHE_LENGTH-1:0] index;
+  logic [`CACHE_WORD_ADR_SIZE-1:0] word_addr;
   logic [1:0] offset;
 } rv32i_rom_cache_key_s;
 
